@@ -5,17 +5,6 @@
   # git clone https://github.com/Hugopvigo/TiempoWeb.git
   cd TiempoWeb
 
-Crear .env con las API keys
-
-  cp .env.example .env
-  nano .env
-  Pon tus claves reales:
-  VITE_OWM_API_KEY=tu_clave_real
-  VITE_AEMET_API_KEY=tu_clave_real
-
-   docker compose --env-file ../.env up -d app --build
-   o
-    cp ../.env .
 
    Build y arranque del contenedor
 
