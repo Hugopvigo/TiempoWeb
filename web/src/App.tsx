@@ -2,24 +2,8 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/theme";
-import { envOwmApiKey, envAemetApiKey } from "@/env";
-import { configureAEMET, isAEMETConfigured } from "@shared/services/aemet";
 import Home from "@/routes/Home";
 import Search from "@/routes/Search";
-
-if (envAemetApiKey && !isAEMETConfigured()) {
-  configureAEMET(envAemetApiKey);
-}
-
-const envSettings: Partial<{ openWeatherMapApiKey: string; aemetApiKey: string }> = {};
-if (envOwmApiKey) envSettings.openWeatherMapApiKey = envOwmApiKey;
-if (envAemetApiKey) envSettings.aemetApiKey = envAemetApiKey;
-if (Object.keys(envSettings).length > 0) {
-  const stored = localStorage.getItem("tiempo-settings");
-  const current = stored ? JSON.parse(stored) : {};
-  const merged = { ...current, ...envSettings };
-  localStorage.setItem("tiempo-settings", JSON.stringify(merged));
-}
 
 const Tides = lazy(() => import("@/routes/Tides"));
 const MapRoute = lazy(() => import("@/routes/Map"));

@@ -7,7 +7,6 @@ import { useCityStore } from "@/stores/cityStore";
 import { useSettingsStore } from "@/stores/cityStore";
 import { getRadarTileUrl, getSatelliteTileUrl, getOpenWeatherMapTileUrl } from "@shared/services/weatherLayers";
 import type { RainViewerData } from "@shared/services/weatherLayers";
-import { envOwmApiKey } from "@/env";
 import { Layers, Play, Pause, SkipBack, SkipForward, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router";
 import { BottomNavBar } from "@/components/ui";
@@ -52,7 +51,7 @@ export function WeatherMap() {
     ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
     : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
 
-  const owmKey = settings.openWeatherMapApiKey || envOwmApiKey;
+  const owmKey = settings.openWeatherMapApiKey;
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
