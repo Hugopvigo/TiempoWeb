@@ -120,80 +120,82 @@ docker/
 - [x] Archivos root viejos eliminados (index.html, script.js, style.css, .androidStudio.md, EASinfo.md, .claude/, .idea/)
 - [x] tiempo-app/ eliminado (código movido a shared/)
 
-### Fase 1 — Core: Clima Actual + 7 días
-- [ ] Componente `CurrentWeather` (temp, sensación, condición, H/L)
-- [ ] Componente `HourlyForecast` (scroll horizontal 24h)
-- [ ] Componente `PrecipitationChart` (SVG área/curva Bezier 24h)
-- [ ] Componente `DailyForecast` (7 días colapsable: 4+3)
-- [ ] Componente `WeatherDetails` (6 tiles: sensación, humedad, viento, UV, presión, visibilidad)
-- [ ] Ruta `Home.tsx` completa con fondo degradado dinámico
-- [ ] Skeleton loaders específicos por sección
+### Fase 1 — Core: Clima Actual + 7 días ✅
+- [x] Componente `CurrentWeather` (temp, sensación, condición, H/L)
+- [x] Componente `HourlyForecast` (scroll horizontal 24h)
+- [x] Componente `PrecipitationChart` (SVG área/curva Bezier 24h)
+- [x] Componente `DailyForecast` (7 días colapsable: 4+3)
+- [x] Componente `WeatherDetails` (6 tiles: sensación, humedad, viento, UV, presión, visibilidad)
+- [x] Ruta `Home.tsx` completa con fondo degradado dinámico
+- [x] Skeleton loaders específicos por sección
 
-### Fase 2 — Gestión de Ciudades
-- [ ] Componente `CitySelector` (modal)
-- [ ] Ruta `Search.tsx` con autocompletado + debounce + AbortController
-- [ ] Geolocalización web (navigator.geolocation + reverse geocoding)
-- [ ] Store de ciudades (localStorage)
-- [ ] Eliminar ciudades con confirmación
+### Fase 2 — Gestión de Ciudades ✅
+- [x] Componente `CitySelector` (modal)
+- [x] Ruta `Search.tsx` con autocompletado + debounce + AbortController
+- [x] Geolocalización web (navigator.geolocation + reverse geocoding)
+- [x] Store de ciudades (localStorage)
+- [x] Eliminar ciudades con confirmación
 
-### Fase 3 — Mareas
-- [ ] Componente `TideChart` (SVG nativo, curva Bezier 24h)
-- [ ] Componente `TideTable` (7 días)
-- [ ] Componente `SeaConditionCard` (estado del mar)
-- [ ] Componente `TideTimesCard` (pleamar/bajamar)
-- [ ] Detección de ciudad costera (`isCoastalCity` de shared/)
-- [ ] Ruta `Tides.tsx` completa
-- [ ] Placeholder "ciudad interior"
+### Fase 3 — Mareas ✅
+- [x] Componente `TideChart` (SVG nativo, curva Bezier 24h)
+- [x] Componente `TideTable` (7 días)
+- [x] Componente `SeaConditionCard` (estado del mar)
+- [x] Componente `TideTimesCard` (pleamar/bajamar)
+- [x] Detección de ciudad costera (`isCoastalCity` de shared/)
+- [x] Ruta `Tides.tsx` completa
+- [x] Placeholder "ciudad interior"
 
-### Fase 4 — Alertas
-- [ ] Componente `AlertBanner` (color por severidad, dismiss)
-- [ ] Componente `AlertList` + `AlertRow`
-- [ ] Ruta `AlertDetail.tsx` (título, descripción, horarios, severidad)
-- [ ] Integración AEMET (servicio directo de shared/)
-- [ ] Merge AEMET + alertas locales (`useMergedAlerts`)
-- [ ] Alertas en Home debajo de ciudad
+### Fase 4 — Alertas ✅
+- [x] Componente `AlertBanner` (color por severidad, dismiss)
+- [x] Componente `AlertList` + `AlertRow`
+- [x] Ruta `AlertDetail.tsx` (título, descripción, horarios, severidad)
+- [x] Integración AEMET (servicio directo de shared/)
+- [x] Merge AEMET + alertas locales (`useMergedAlerts`)
+- [x] Alertas en Home debajo de ciudad
 
-### Fase 5 — Mapa Interactivo
-- [ ] Componente `WeatherMap` con Leaflet directo en DOM
-- [ ] CartoDB tiles (light_all / dark_all)
-- [ ] 5 capas: RainViewer, satélite, temperatura, viento, presión
-- [ ] Componente `LayerSelector` (botones horizontales)
-- [ ] Marcadores de ciudades guardadas
-- [ ] Radar timeline (play/pause/scrub) — Leaflet nativo
-- [ ] API Key OWM configurable
-- [ ] Ruta `Map.tsx` completa
+### Fase 5 — Mapa Interactivo ✅
+- [x] Componente `WeatherMap` con Leaflet directo en DOM
+- [x] CartoDB tiles (light_all / dark_all)
+- [x] 5 capas: RainViewer, satélite, temperatura, viento, presión
+- [x] Componente `LayerSelector` (botones horizontales)
+- [x] Marcadores de ciudades guardadas
+- [x] Radar timeline (play/pause/scrub) — Leaflet nativo
+- [x] API Key OWM configurable
+- [x] Ruta `Map.tsx` completa
 
-### Fase 6 — Calidad del Aire + Fase Lunar
-- [ ] Componente `AirQualityCard` (EAQI + barra de progreso + detalle expandible)
-- [ ] Componente `LunarPhaseCard` (8 SVGs nativos, moonrise/moonset, sunrise/sunset)
-- [ ] Integración en Home
+### Fase 6 — Calidad del Aire + Fase Lunar ✅
+- [x] Componente `AirQualityCard` (EAQI + barra de progreso + detalle expandible)
+- [x] Componente `LunarPhaseCard` (8 SVGs nativos, moonrise/moonset, sunrise/sunset)
+- [x] Integración en Home
 
-### Fase 7 — Animaciones + Tema
-- [ ] `WeatherParticles` (CSS keyframes: lluvia, tormenta, nieve, niebla, nubes, destellos, rayos)
-- [ ] Glassmorphism cards (`backdrop-filter: blur()`)
-- [ ] Transiciones suaves entre modos (CSS transitions)
-- [ ] Responsive design completo (mobile-first, sidebar desktop en md+)
+### Fase 7 — Animaciones + Tema ✅
+- [x] `WeatherParticles` (CSS keyframes: lluvia, tormenta, nieve, niebla, nubes, destellos, rayos)
+- [x] Glassmorphism cards (`backdrop-filter: blur()`)
+- [x] Transiciones suaves entre modos (CSS transitions)
+- [x] Responsive design completo (mobile-first, sidebar desktop en md+)
 
-### Fase 8 — Ajustes
-- [ ] Ruta `Settings.tsx` completa
-- [ ] Tema (sistema / claro / oscuro)
-- [ ] Unidades (°C/°F, kmh/mph/ms/knots)
-- [ ] Gestión de ciudades (lista, eliminar)
-- [ ] API Keys (OWM + AEMET) con validación
-- [ ] Iconos (coloreados / monocromo)
+### Fase 8 — Ajustes ✅
+- [x] Ruta `Settings.tsx` completa
+- [x] Tema (sistema / claro / oscuro)
+- [x] Unidades (°C/°F, kmh/mph/ms/knots)
+- [x] Gestión de ciudades (lista, eliminar)
+- [x] API Keys (OWM + AEMET) con validación
+- [x] Iconos (coloreados / monocromo)
 
-### Fase 9 — Navegación + Layout
-- [ ] Layout principal responsive (bottom nav mobile / sidebar desktop)
-- [ ] React Router con lazy loading por ruta
-- [ ] Favicon + meta tags OG
-- [ ] Transiciones de página
+### Fase 9 — Navegación + Layout ✅
+- [x] Layout principal responsive (bottom nav mobile / sidebar desktop)
+- [x] React Router con lazy loading por ruta
+- [x] Favicon + meta tags OG
+- [x] Transiciones de página
 
-### Fase 10 — Docker + Deploy
-- [ ] Verificar Dockerfile multi-stage (build → nginx)
-- [ ] Verificar nginx.conf (SPA fallback, gzip, cache)
-- [ ] Variables de entorno para API keys por defecto
-- [ ] Healthcheck endpoint funcional
-- [ ] Docker Compose producción funcional
+### Fase 10 — Docker + Deploy ✅
+- [x] Verificar Dockerfile multi-stage (build → nginx)
+- [x] Verificar nginx.conf (SPA fallback, gzip, cache)
+- [x] Variables de entorno para API keys por defecto
+- [x] Healthcheck endpoint funcional
+- [x] Docker Compose producción funcional
+- [x] Despliegue en Oracle Cloud ARM con Apache2 como reverse proxy
+- [x] Subdominio `tiempo.hugopvigo.es` con SSL vía Cloudflare
 
 ## Principios de Diseño (estilo Apple Weather)
 
@@ -246,13 +248,18 @@ docker/
 ## Orden de Ejecución
 
 1. **Fase 0**: Scaffolding + monorepo ✅
-2. **Fase 1**: Clima actual + 7 días
-3. **Fase 2**: Gestión de ciudades
-4. **Fase 3**: Mareas
-5. **Fase 4**: Alertas AEMET
-6. **Fase 5**: Mapa interactivo
-7. **Fase 6**: AQI + Fase Lunar
-8. **Fase 7**: Animaciones + Tema
-9. **Fase 8**: Ajustes
-10. **Fase 9**: Navegación + Layout
-11. **Fase 10**: Docker + Deploy
+2. **Fase 1**: Clima actual + 7 días ✅
+3. **Fase 2**: Gestión de ciudades ✅
+4. **Fase 3**: Mareas ✅
+5. **Fase 4**: Alertas AEMET ✅
+6. **Fase 5**: Mapa interactivo ✅
+7. **Fase 6**: AQI + Fase Lunar ✅
+8. **Fase 7**: Animaciones + Tema ✅
+9. **Fase 8**: Ajustes ✅
+10. **Fase 9**: Navegación + Layout ✅
+11. **Fase 10**: Docker + Deploy ✅
+
+---
+
+**Producción:** [https://tiempo.hugopvigo.es](https://tiempo.hugopvigo.es)
+Servidor Oracle Cloud ARM (Ampere), Docker + Apache2 reverse proxy, Cloudflare proxy + SSL.

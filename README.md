@@ -9,6 +9,8 @@
 
 **Tiempo** es una aplicación meteorológica web inspirada en Apple Weather. Combina datos oficiales de la **AEMET** para España con la cobertura global de **Open-Meteo**, todo con una estética minimalista de fondos degradados dinámicos y glassmorphism.
 
+**Producción:** [https://tiempo.hugopvigo.es](https://tiempo.hugopvigo.es)
+
 ---
 
 ## Características
@@ -107,16 +109,51 @@ docker compose -f docker/docker-compose.yml up dev
 ## Fases de Desarrollo
 
 - [x] **Fase 0:** Scaffolding, monorepo, código compartido, Docker
-- [ ] **Fase 1:** Core — previsión actual + 7 días
-- [ ] **Fase 2:** Gestión de ciudades
-- [ ] **Fase 3:** Mareas
-- [ ] **Fase 4:** Alertas AEMET
-- [ ] **Fase 5:** Mapa interactivo
-- [ ] **Fase 6:** Calidad del Aire + Fase Lunar
-- [ ] **Fase 7:** Animaciones + Tema
-- [ ] **Fase 8:** Ajustes
-- [ ] **Fase 9:** Navegación + Layout
-- [ ] **Fase 10:** Docker + Deploy
+- [x] **Fase 1:** Core — previsión actual + 7 días
+- [x] **Fase 2:** Gestión de ciudades
+- [x] **Fase 3:** Mareas
+- [x] **Fase 4:** Alertas AEMET
+- [x] **Fase 5:** Mapa interactivo
+- [x] **Fase 6:** Calidad del Aire + Fase Lunar
+- [x] **Fase 7:** Animaciones + Tema
+- [x] **Fase 8:** Ajustes
+- [x] **Fase 9:** Navegación + Layout
+- [x] **Fase 10:** Docker + Deploy
+
+---
+
+## Despliegue en Producción
+
+La aplicación está desplegada en un servidor Oracle Cloud ARM (Ampere) usando Docker para el contenedor de la app y Apache2 como reverse proxy en frente. El SSL termina en Cloudflare.
+
+```text
+Cloudflare (proxy + SSL)
+    ↓
+Apache2 (443/80) → ProxyPass → Docker container (127.0.0.1:8080) → nginx + SPA build
+```
+
+Configuración del VirtualHost de Apache para `tiempo.hugopvigo.es`:
+
+```apache
+<VirtualHost *:443>
+    ServerName tiempo.hugopvigo.es
+    SSLEngine on
+    SSLCertificateFile /etc/apache2/ssl/cloudflare.pem
+    SSLCertificateKeyFile /etc/apache2/ssl/cloudflare-key.pem
+
+    ProxyPreserveHost On
+    ProxyPass / http://127.0.0.1:8080/
+    ProxyPassReverse / http://127.0.0.1:8080/
+</VirtualHost>
+```
+
+El contenedor se construye con las API keys inyectadas en build time vía `.env`:
+
+```bash
+cd docker
+cp ../.env .
+docker compose up -d app --build
+```
 
 ---
 
