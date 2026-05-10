@@ -124,7 +124,7 @@ docker compose -f docker/docker-compose.yml up dev
 
 ## Despliegue en Producción
 
-La aplicación está desplegada en un servidor Oracle Cloud ARM (Ampere) usando Docker para el contenedor de la app y Apache2 como reverse proxy en frente. El SSL termina en Cloudflare.
+La aplicación está desplegada en un servidor Oracle Cloud ARM (Ampere) usando Docker para el contenedor de la app y Apache2 como reverse proxy en frente. El SSL termina en Cloudflare. Adaptalo a tu VPS.
 
 ```text
 Cloudflare (proxy + SSL)
@@ -151,7 +151,6 @@ El contenedor se construye con las API keys inyectadas en build time vía `.env`
 
 ```bash
 cd docker
-cp ../.env .
 docker compose up -d app --build
 ```
 
