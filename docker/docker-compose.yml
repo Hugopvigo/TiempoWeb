@@ -3,6 +3,9 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      args:
+        VITE_OWM_API_KEY: ${VITE_OWM_API_KEY}
+        VITE_AEMET_API_KEY: ${VITE_AEMET_API_KEY}
     ports:
       - "8080:80"
     restart: unless-stopped

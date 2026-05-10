@@ -10,6 +10,11 @@ RUN npm ci
 COPY shared/ ./shared/
 COPY web/ ./web/
 
+ARG VITE_OWM_API_KEY=""
+ARG VITE_AEMET_API_KEY=""
+ENV VITE_OWM_API_KEY=$VITE_OWM_API_KEY
+ENV VITE_AEMET_API_KEY=$VITE_AEMET_API_KEY
+
 RUN npm run build -w web
 
 FROM nginx:alpine

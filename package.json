@@ -11,5 +11,8 @@
     "build": "npm run build -w web",
     "lint": "npm run lint -w web",
     "preview": "npm run preview -w web"
+  },
+  "dependencies": {
+    "vite": "^8.0.11"
   }
 }

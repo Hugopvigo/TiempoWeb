@@ -53,18 +53,52 @@ function TimeRow({ icon: Icon, iconColor, label, value }: { icon: React.Componen
 
 function MoonIcon({ phaseIndex }: { phaseIndex: number }) {
   const { isDark } = useTheme();
-  const darkFill = isDark ? "#64748B" : "#CBD5E1";
-  const litFill = isDark ? "#FCD34D" : "#FDE68A";
+  const darkFill = isDark ? "#475569" : "#64748B";
+  const litFill = isDark ? "#FCD34D" : "#FBBF24";
 
-  const svgs = [
+  // Right D-shape (lit right half), Left D-shape (lit left half)
+  const rightD = "M20 4 A16 16 0 0 1 20 36 L20 4Z";
+  const leftD  = "M20 4 A16 16 0 0 0 20 36 L20 4Z";
+
+  const svgs: React.ReactNode[] = [
+    // 0: Luna nueva — full dark
     <circle key="0" cx="20" cy="20" r="16" fill={darkFill} />,
-    <><circle key="1a" cx="20" cy="20" r="16" fill={darkFill} /><path key="1b" d="M20 4 A16 16 0 0 1 20 36 A10 16 0 0 0 20 4" fill={litFill} /></>,
-    <><circle key="2a" cx="20" cy="20" r="16" fill={darkFill} /><path key="2b" d="M20 4 A16 16 0 0 1 20 36 A5 16 0 0 0 20 4" fill={litFill} /></>,
-    <circle key="3" cx="20" cy="20" r="16" fill={litFill} />,
-    <><circle key="4a" cx="20" cy="20" r="16" fill={darkFill} /><path key="4b" d="M20 4 A16 16 0 0 0 20 36 A5 16 0 0 1 20 4" fill={litFill} /></>,
-    <><circle key="5a" cx="20" cy="20" r="16" fill={darkFill} /><path key="5b" d="M20 4 A16 16 0 0 0 20 36 A10 16 0 0 1 20 4" fill={litFill} /></>,
-    <circle key="6" cx="20" cy="20" r="16" fill={darkFill} />,
-    <circle key="7" cx="20" cy="20" r="16" fill={isDark ? "#475569" : "#94A3B8"} />,
+    // 1: Creciente — dark bg, right D lit, dark ellipse leaves thin right sliver
+    <g key="1">
+      <circle cx="20" cy="20" r="16" fill={darkFill} />
+      <path d={rightD} fill={litFill} />
+      <ellipse cx="20" cy="20" rx="11" ry="16" fill={darkFill} />
+    </g>,
+    // 2: Cuarto creciente — dark bg, right D lit (half moon)
+    <g key="2">
+      <circle cx="20" cy="20" r="16" fill={darkFill} />
+      <path d={rightD} fill={litFill} />
+    </g>,
+    // 3: Gibosa creciente — full lit, dark left D, lit ellipse leaves thin left dark sliver
+    <g key="3">
+      <circle cx="20" cy="20" r="16" fill={litFill} />
+      <path d={leftD} fill={darkFill} />
+      <ellipse cx="20" cy="20" rx="11" ry="16" fill={litFill} />
+    </g>,
+    // 4: Luna llena — full lit
+    <circle key="4" cx="20" cy="20" r="16" fill={litFill} />,
+    // 5: Gibosa menguante — full lit, dark right D, lit ellipse leaves thin right dark sliver
+    <g key="5">
+      <circle cx="20" cy="20" r="16" fill={litFill} />
+      <path d={rightD} fill={darkFill} />
+      <ellipse cx="20" cy="20" rx="11" ry="16" fill={litFill} />
+    </g>,
+    // 6: Cuarto menguante — dark bg, left D lit (half moon)
+    <g key="6">
+      <circle cx="20" cy="20" r="16" fill={darkFill} />
+      <path d={leftD} fill={litFill} />
+    </g>,
+    // 7: Menguante — dark bg, left D lit, dark ellipse leaves thin left sliver
+    <g key="7">
+      <circle cx="20" cy="20" r="16" fill={darkFill} />
+      <path d={leftD} fill={litFill} />
+      <ellipse cx="20" cy="20" rx="11" ry="16" fill={darkFill} />
+    </g>,
   ];
 
   return (
