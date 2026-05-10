@@ -1,0 +1,11 @@
+{
+  "name": "@tiempo/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "fast-xml-parser": "^5.7.2"
+  }
+}

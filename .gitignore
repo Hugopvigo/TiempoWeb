@@ -1,69 +1,19 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
 node_modules/
-
-# Expo
-.expo/
-.idea/
 dist/
-web-build/
-expo-env.d.ts
-nativewind-env.d.ts
+.vite/
 
-# Native (Android/iOS)
-.kotlin/
-*.orig.*
-*.jks
-*.keystore
-*.p8
-*.p12
-*.key
-*.mobileprovision
-local.properties
-*.apk
-*.aab
+.env
+.env.local
+.env.*.local
 
-# Google/Firebase (Recomendado ignorar si contienen keys sensibles)
-# google-services.json
-# GoogleService-Info.plist
+*.tsbuildinfo
 
-# Metro
-.metro-health-check*
+.DS_Store
+*.pem
 
-# debug
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
-.DS_Store
-*.pem
-
-# Environment variables & Secrets (CRÍTICO)
-.env
-.env.local
-.env.development
-.env.test
-.env.production
-.env.*.local
-secrets.json
-
-# EAS (Expo Application Services)
-.eas/
-credentials.json
-
-# typescript
-*.tsbuildinfo
-
-# generated native folders
-/ios
-/android
-
-# Local build script
-local-build-setup.sh
-
-# Root config files
-.androidStudio.md
-tiempo-app/Install.md
-EASinfo.md
+.idea/
+.vscode/

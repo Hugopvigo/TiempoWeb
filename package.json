@@ -1,0 +1,15 @@
+{
+  "name": "tiempo-web",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "web"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w web",
+    "build": "npm run build -w web",
+    "lint": "npm run lint -w web",
+    "preview": "npm run preview -w web"
+  }
+}

@@ -1,397 +1,258 @@
-# Tiempo — App del Tiempo para Android
+# Tiempo — Web
 
 ## Stack Tecnológico
 
 | Capa | Tecnología | Razón |
 |------|-----------|-------|
-| Framework | **React Native + Expo SDK 54** | Desarrollo rápido, OTA updates, EAS Build |
-| Lenguaje | **TypeScript** | Tipado estricto, menos bugs |
-| Navegación | **Expo Router v6** (file-based) | Lazy loading automático, deep linking |
-| Estilo | **NativeWind v4** (Tailwind para RN) | CSS utility-first, responsive nativo |
+| Framework | **Vite 8** + **React 19** | Build ultra-rápido, HMR instantáneo |
+| Lenguaje | **TypeScript 6** | Tipado estricto, compartido con app móvil |
+| Navegación | **React Router v7** | SPA con lazy-load |
+| Estilo | **Tailwind CSS v4** | Utility-first, mismo paradigma que NativeWind |
 | Estado | **Zustand** + **TanStack Query v5** | Cache inteligente de API, estado mínimo |
-| Animaciones | **Reanimated 4** + **Skia** | Animaciones fluidas a 120fps, gráficos custom |
-| Almacenamiento | **MMKV** | Key-value ultra-rápido para ciudades guardadas |
-| Iconos | **Lucide** | Consistentes, ligeros |
-| APIs | **AEMET** (oficial España) + **Open-Meteo** (fallback/global) | Datos oficiales + cobertura mundial |
+| Iconos | **Lucide React** | Mismos iconos que la app móvil |
+| Mapa | **Leaflet** directo en DOM | Interactivo nativo, 5 capas meteorológicas |
+| Animaciones | **CSS** (keyframes, transitions) | Sin overhead, 60fps nativos |
+| Almacenamiento | **localStorage** | Persistencia simple para ciudades y ajustes |
+| Deploy | **Docker** + **nginx** | Multi-stage build, SPA serving |
 
 ## APIs Externas
 
 | API | Datos | Coste |
 |-----|-------|-------|
-| **AEMET** (aemet.es) | Previsión España, avisos, mareas | Gratuito con key |
-| **Open-Meteo** | Previsión global, marine/mareas | Gratuito, sin key |
+| **Open-Meteo** | Previsión global, marine, calidad del aire | Gratuito, sin key |
 | **Open-Meteo Geocoding** | Búsqueda de ciudades | Gratuito |
-| **AEMET Avisos** | Alertas meteorológicas | Gratuito con key |
+| **RainViewer** | Radar de precipitación, satélite infrarrojo | Gratuito |
+| **AEMET** | Alertas oficiales España (CAP XML) | Gratuito con key |
+| **OpenWeatherMap** | Tiles de temperatura, viento, presión | Gratuito con key |
 
 ## Modo Claro/Oscuro
 
-- Detección automática del sistema (`useColorScheme()`)
+- Detección automática del sistema (`window.matchMedia`)
 - Override manual en Ajustes (sistema / claro / oscuro)
-- Fondos degradados duales por condición climática:
-  - **Claro**: degradados cálidos (soleado=naranja, lluvia=gris claro, noche=azul cielo)
-  - **Oscuro**: degradados profundos (soleado=azul oscuro, lluvia=gris pizarra, noche=negro azulado)
-- Cards semitransparentes adaptadas:
-  - **Claro**: `rgba(255,255,255,0.25)` con blur
-  - **Oscuro**: `rgba(0,0,0,0.3)` con blur
-- Texto adaptativo: blanco sobre oscuro, oscuro sobre claro
-- Iconos climáticos con variantes day/night
-- Transición suave al cambiar modo (Reanimated shared transition)
-- Store: `settingsStore` → `{ theme: 'system' | 'light' | 'dark' }`
-- NativeWind soporta modo oscuro nativo con `dark:` prefix
+- Fondos degradados duales por condición climática (9 condiciones x 2 modos = 18 gradientes)
+- Cards glassmorphism con `backdrop-filter: blur()`
+- Texto adaptativo: `slate-800` sobre claro, `slate-100` sobre oscuro
+- Transiciones CSS suaves entre modos (700ms)
 
 ## Estructura de Carpetas
 
 ```
-tiempo-app/
-├── app/                    # Expo Router (file-based routing)
-│   ├── _layout.tsx         # Root layout + providers
-│   ├── index.tsx           # Home: previsión actual
-│   ├── search.tsx          # Búsqueda de ciudades
-│   ├── tides.tsx           # Mareas
-│   ├── map.tsx             # Mapa meteorológico
-│   └── settings.tsx        # Ajustes + tema + notificaciones
-├── components/
-│   ├── weather/            # Cards, hourly, daily forecast
-│   ├── tides/              # Tide chart, tide table
-│   ├── map/                # Map layers, layer selector
-│   ├── city/               # City selector, search bar
-│   ├── ui/                 # Button, Sheet, Skeleton, etc.
-│   └── theme/              # ThemeProvider, ThemedText, etc.
-├── hooks/
-│   ├── useWeather.ts
-│   ├── useTides.ts
-│   ├── useCities.ts
-│   ├── useAlerts.ts
-│   ├── useLocation.ts
-│   └── useTheme.ts
-├── services/
-│   ├── aemet.ts            # AEMET API client
-│   ├── openmeteo.ts        # Open-Meteo API client
-│   └── geocoding.ts        # City search
-├── stores/
-│   ├── cityStore.ts        # Zustand: ciudades guardadas
-│   └── settingsStore.ts    # Zustand: tema, preferencias, notificaciones
-├── types/
-│   └── weather.ts          # Tipos compartidos
+shared/                    # Código compartido con app móvil (0 deps React Native)
+├── types/weather.ts       # Tipos TypeScript
 ├── constants/
-│   ├── theme.ts            # Colores, gradients por condición + modo
-│   └── weather.ts          # Mapeo iconos, descripciones
-└── assets/                 # Iconos, imágenes
+│   ├── theme.ts           # Gradientes, colores por condición + modo
+│   ├── weather.ts         # Mapeo WMO → condiciones, descripciones
+│   └── aemetZones.ts      # Zonas AEMET, subzonas
+├── services/
+│   ├── openmeteo.ts       # getWeather, searchCities, getMarineWeather, getAirQuality
+│   ├── aemet.ts           # getAEMETAlerts (CAP XML parsing)
+│   ├── weatherLayers.ts   # RainViewer + OWM tiles
+│   └── alerts.ts          # generateAlerts (umbrales locales)
+└── utils/
+    ├── lunar.ts           # calculateMoonPhase, calculateMoonTimes
+    └── coastal.ts         # isCoastalCity, haversine
+
+web/                       # App web Vite + React
+├── src/
+│   ├── main.tsx           # Entry point
+│   ├── App.tsx            # Root providers + Router
+│   ├── routes/            # Páginas (React Router)
+│   │   ├── Home.tsx       # Clima principal
+│   │   ├── Search.tsx     # Búsqueda ciudades
+│   │   ├── Tides.tsx      # Mareas
+│   │   ├── Map.tsx        # Mapa meteorológico
+│   │   ├── Settings.tsx   # Ajustes
+│   │   └── AlertDetail.tsx # Detalle de alerta
+│   ├── components/
+│   │   ├── weather/       # CurrentWeather, HourlyForecast, DailyForecast, etc.
+│   │   ├── tides/         # TideChart, TideTable, SeaConditionCard
+│   │   ├── map/           # WeatherMap (Leaflet), LayerSelector, RadarTimeline
+│   │   ├── alerts/        # AlertBanner, AlertList
+│   │   ├── theme/         # ThemeProvider, DynamicBackground
+│   │   ├── city/          # CitySelector
+│   │   └── ui/            # BottomNavBar, Skeleton
+│   ├── hooks/             # Adaptados de shared/ + web-specific
+│   │   ├── useWeather.ts
+│   │   ├── useTides.ts
+│   │   ├── useAirQuality.ts
+│   │   ├── useAlerts.ts
+│   │   ├── useWeatherLayers.ts
+│   │   ├── useCities.ts
+│   │   ├── useTheme.ts        # window.matchMedia
+│   │   ├── useLocation.ts     # navigator.geolocation
+│   │   └── useLunarPhase.ts
+│   ├── stores/
+│   │   └── cityStore.ts   # Zustand + localStorage (adaptado de MMKV)
+│   └── index.css          # Tailwind base + animaciones custom
+├── index.html
+├── vite.config.ts
+├── tailwind.config.ts
+├── tsconfig.json
+└── package.json
+
+docker/
+├── Dockerfile             # Multi-stage: build Vite → nginx
+├── Dockerfile.dev         # Dev server con HMR
+├── nginx.conf             # SPA fallback, gzip, cache
+└── docker-compose.yml     # Producción + desarrollo
 ```
 
 ## Fases de Implementación
 
-### Fase 0 — Scaffolding
-- [x] Crear proyecto con `npx create-expo-app` + template TypeScript
-- [x] Instalar y configurar Expo Router v4
-- [x] Instalar y configurar NativeWind v4
-- [x] Instalar Zustand, TanStack Query, MMKV, Reanimated, Lucide
-- [x] Crear estructura de carpetas
-- [x] Configurar ThemeProvider (claro/oscuro + sistema)
-- [x] Configurar providers root (QueryClient, Theme, MMKV)
-- [x] Limpiar archivos legacy (HTML, CSS, Python, subdirectorio Tiempo/)
-- [x] Configurar TypeScript estricto
+### Fase 0 — Scaffolding ✅
+- [x] Monorepo npm workspaces (root + shared + web)
+- [x] Proyecto Vite + React 19 + TypeScript
+- [x] Tailwind CSS v4 configurado (plugin Vite)
+- [x] React Router v7 con 6 rutas
+- [x] TanStack Query v5 + Zustand instalados
+- [x] Lucide React + Leaflet instalados
+- [x] `shared/` con 10 archivos reutilizados de app móvil (0 cambios)
+- [x] `cityStore.ts` adaptado: MMKV → localStorage
+- [x] `useTheme.ts` adaptado: useColorScheme → window.matchMedia
+- [x] `useLocation.ts` reescrito: expo-location → navigator.geolocation
+- [x] Hooks web: useWeather, useTides, useAirQuality, useAlerts, useWeatherLayers, useLunarPhase
+- [x] ThemeProvider + DynamicBackground
+- [x] BottomNavBar responsive
+- [x] Skeleton loaders (shimmer CSS)
+- [x] WeatherIcon (Lucide React con colores)
+- [x] Docker: Dockerfile (prod), Dockerfile.dev, nginx.conf, docker-compose.yml
+- [x] .gitignore reescrito para web + monorepo
+- [x] Archivos root viejos eliminados (index.html, script.js, style.css, .androidStudio.md, EASinfo.md, .claude/, .idea/)
+- [x] tiempo-app/ eliminado (código movido a shared/)
 
-### Fase 1 — Core: Previsión Actual + 7 días
-- [x] Servicio `openmeteo.ts`: función `getWeather(lat, lon)`
-- [x] Servicio `aemet.ts`: stub con funciones definidas
-- [x] Hook `useWeather(lat, lon)` con TanStack Query (stale 10min, cache 30min)
-- [x] Pantalla principal: fondo degradado dinámico por condición + modo
-- [x] Card tiempo actual (temp, sensación, humedad, viento, UV)
-- [x] Previsión horaria (scroll horizontal, 24h)
-- [x] Previsión diaria (7 días, max/min, icono, prob. lluvia)
-- [x] Skeleton loaders con shimmer
-- [x] Mapeo condición → icono + gradiente (claro/oscuro)
-- [x] Pull-to-refresh
+### Fase 1 — Core: Clima Actual + 7 días
+- [ ] Componente `CurrentWeather` (temp, sensación, condición, H/L)
+- [ ] Componente `HourlyForecast` (scroll horizontal 24h)
+- [ ] Componente `PrecipitationChart` (SVG área/curva Bezier 24h)
+- [ ] Componente `DailyForecast` (7 días colapsable: 4+3)
+- [ ] Componente `WeatherDetails` (6 tiles: sensación, humedad, viento, UV, presión, visibilidad)
+- [ ] Ruta `Home.tsx` completa con fondo degradado dinámico
+- [ ] Skeleton loaders específicos por sección
 
 ### Fase 2 — Gestión de Ciudades
-- [x] Servicio `geocoding.ts`: búsqueda con Open-Meteo Geocoding
-- [x] Store `cityStore.ts`: ciudades guardadas, ciudad activa
-- [x] Persistencia con MMKV
-- [x] Pantalla de búsqueda con autocompletado + debounce
-- [x] Lista de ciudades guardadas
-- [x] Ciudad por defecto = última seleccionada
-- [x] Geolocalización actual como primera ciudad (GPS)
-- [x] Swipe para eliminar
-- [x] Bottom sheet selector de ciudades (CitySelector modal)
-- [x] Transición animada al cambiar ciudad
+- [ ] Componente `CitySelector` (modal)
+- [ ] Ruta `Search.tsx` con autocompletado + debounce + AbortController
+- [ ] Geolocalización web (navigator.geolocation + reverse geocoding)
+- [ ] Store de ciudades (localStorage)
+- [ ] Eliminar ciudades con confirmación
 
 ### Fase 3 — Mareas
-- [x] Servicio Open-Meteo Marine API (tipado fuerte, snake→camelCase)
-- [x] Hook `useTides(lat, lon)` + `useCurrentSeaCondition(lat, lon)`
-- [x] Gráfico de mareas con SVG (curva Bézier 24h, fill + grid)
-- [x] Tabla mareas 7 días: oleaje, dirección, periodo
-- [x] Detección automática de ciudad costera (`isCoastalCity()`)
-- [x] Card estado del mar actual (altura, dirección, periodo, alerta)
-- [x] Selector de día (tabs: Hoy, Lun, Mar...)
-- [x] Pantalla "ciudad interior" cuando no es costera
-- [x] Skeleton loaders para mareas
-- [x] Adaptación visual al modo claro/oscuro
-- [ ] Servicio AEMET mareas (pendiente API key)
+- [ ] Componente `TideChart` (SVG nativo, curva Bezier 24h)
+- [ ] Componente `TideTable` (7 días)
+- [ ] Componente `SeaConditionCard` (estado del mar)
+- [ ] Componente `TideTimesCard` (pleamar/bajamar)
+- [ ] Detección de ciudad costera (`isCoastalCity` de shared/)
+- [ ] Ruta `Tides.tsx` completa
+- [ ] Placeholder "ciudad interior"
 
-### Fase 4 — Notificaciones y Alertas
-- [x] Alertas locales generadas desde datos de previsión (viento, UV, tormenta, lluvia, nieve, frío, calor, niebla)
-- [x] Servicio AEMET Avisos (parsing tipado, fallback si no hay key)
-- [x] Hook `useLocalAlerts(weather)` + `useAlerts(zonaCode)`
-- [x] AlertBanner en pantalla principal (color por severidad, dismiss, navegación a detalle)
-- [x] AlertList + AlertRow (lista de avisos con icono, severidad, timestamps)
-- [x] Pantalla detalle de alerta (título, descripción, inicio/fin, severidad, link AEMET condicional)
-- [x] Expo Notifications setup + permisos + canal Android
-- [x] Background fetch periódico (30min) para alertas
-- [x] Badge en icono de app (número de alertas activas)
-- [x] Ajustes de notificaciones por tipo (lluvia, tormenta, nieve, viento, calor, frío, costera)
-- [x] `AppSettings.notifications` ampliado con heat/cold/coastal
-- [x] Umbrales ajustados: viento 50/65/90, UV 8/10/12, temp 40/44, lluvia red ≥95%, frío red ≤-20°C
-- [x] Integración AEMET: API key configurable en Settings, init en _layout.tsx
-- [x] Mapa admin1 → zona AEMET (`constants/aemetZones.ts` + `getAEMETZone()`)
-- [x] Hook combinado `useMergedAlerts()`: AEMET principal, locales fallback/complemento
-- [x] Background fetch con merge AEMET+locales
-- [x] 8 bugs corregidos: badge count, Cantabria→SAN, ID AEMET determinista, fallback null, toggle costera con nota, rain.red, calor descripción, cold.red
+### Fase 4 — Alertas
+- [ ] Componente `AlertBanner` (color por severidad, dismiss)
+- [ ] Componente `AlertList` + `AlertRow`
+- [ ] Ruta `AlertDetail.tsx` (título, descripción, horarios, severidad)
+- [ ] Integración AEMET (servicio directo de shared/)
+- [ ] Merge AEMET + alertas locales (`useMergedAlerts`)
+- [ ] Alertas en Home debajo de ciudad
 
-### Fase 5 — Mapa Meteorológico
-- [x] Mapa WebView con Leaflet + CartoDB tiles (light_all / dark_all)
-- [x] Capas: radar lluvia (RainViewer), nubes (satélite/OWM), temperatura, viento, presión (5 capas — humedad eliminada en v4.0)
-- [x] Selector de capas (`LayerSelector`) con 6 botones horizontales
-- [x] Marcadores de ciudades guardadas con divIcons personalizados
-- [x] Estilo mapa adaptado a modo claro/oscuro
-- [x] Clave API OpenWeatherMap configurable desde Settings
-- [x] Capas OWM V1 (humedad_m) — humedad migrada de V2 HRD0 a V1 humidity_m
-- [x] `useOwmClouds` alternancia entre satélite y tiles OWM para nubes
-- [x] Opacidad por capa (nubes 0.85, viento 0.8 en modo claro)
-- [x] Etiqueta de capa activa visible en el mapa (v4.0)
-- [x] Botones del selector de capas mejorados en modo oscuro (v4.0): fondo 0.28, borde 0.35, icono 0.65
-- [x] `errorTileUrl` para tiles fallidos
+### Fase 5 — Mapa Interactivo
+- [ ] Componente `WeatherMap` con Leaflet directo en DOM
+- [ ] CartoDB tiles (light_all / dark_all)
+- [ ] 5 capas: RainViewer, satélite, temperatura, viento, presión
+- [ ] Componente `LayerSelector` (botones horizontales)
+- [ ] Marcadores de ciudades guardadas
+- [ ] Radar timeline (play/pause/scrub) — Leaflet nativo
+- [ ] API Key OWM configurable
+- [ ] Ruta `Map.tsx` completa
 
-### Fase 6 — Capas adicionales OWM
-- [x] Capas de temperatura, viento y presion via OpenWeatherMap (5 capas — humedad eliminada en v4.0)
-- [x] Seccion "Claves API" en Settings con input de OpenWeatherMap API Key
-- [x] Capas V1 (humidity_m para humedad) — eliminada en v4.0
-- [x] Capas disponibles sin API key: precipitacion, nubes
-- [x] Capas disponibles con API key: temperatura, viento, presion
+### Fase 6 — Calidad del Aire + Fase Lunar
+- [ ] Componente `AirQualityCard` (EAQI + barra de progreso + detalle expandible)
+- [ ] Componente `LunarPhaseCard` (8 SVGs nativos, moonrise/moonset, sunrise/sunset)
+- [ ] Integración en Home
 
-### Fase 7 — Mareas v2
-- [x] `sea_level_height_msl` integrado en `getMarineWeather()`
-- [x] `useTideDirection()`: altura actual + direccion (subiendo/bajando/estable)
-- [x] `deriveTideForecasts()`: horarios de pleamar/bajamar detectando picos/valles
-- [x] `TideTimesCard`: pleamar (verde) / bajamar (naranja) con alturas
-- [x] Indicador de marea en `SeaConditionCard` (4a columna)
+### Fase 7 — Animaciones + Tema
+- [ ] `WeatherParticles` (CSS keyframes: lluvia, tormenta, nieve, niebla, nubes, destellos, rayos)
+- [ ] Glassmorphism cards (`backdrop-filter: blur()`)
+- [ ] Transiciones suaves entre modos (CSS transitions)
+- [ ] Responsive design completo (mobile-first, sidebar desktop en md+)
 
-### Fase 8 — Animaciones de Particulas Climaticas
-- [x] Componente `WeatherParticles` con Reanimated (`useSharedValue` + `withRepeat`)
-- [x] `RainDrop`: 30 gotas cayendo con inclinacion por viento (rain), 40 gotas (storm)
-- [x] `SnowFlake`: 20 copos con drift sinusoidal horizontal
-- [x] `FogPuff`: 8 puffs grandes con drift horizontal lento
-- [x] `CloudPuff`: 3-5 nubes lentas para partly_cloudy/cloudy/night_cloudy
-- [x] `Sparkle`: 10-15 puntitos pulsantes para clear/night_clear
-- [x] `LightningFlash`: overlay con flash periodico (storm), primer flash inmediato
-- [x] `seededRandom()`: offsets deterministas por render
-- [x] Colores adaptativos claro/oscuro por tipo de particula
-- [x] `pointerEvents="none"` + `cancelAnimation()` en cleanup
-- [x] Transicion fade in/out al cambiar de condicion climatica
-- [x] Visibilidad mejorada de nieve, niebla y lluvia en modo claro
-- [x] Bugfix: `runOnJS` innecesario eliminado de LightningFlash
+### Fase 8 — Ajustes
+- [ ] Ruta `Settings.tsx` completa
+- [ ] Tema (sistema / claro / oscuro)
+- [ ] Unidades (°C/°F, kmh/mph/ms/knots)
+- [ ] Gestión de ciudades (lista, eliminar)
+- [ ] API Keys (OWM + AEMET) con validación
+- [ ] Iconos (coloreados / monocromo)
 
-### Fase 9 — Animacion de Radar en Tiempo Real
-- [x] `useWeatherLayers` ampliado: `isPlaying`, `togglePlay`, `stopPlay`, `radarFrameUrls`, `pastCount`
-- [x] Auto-play con interval 800ms, ciclo frames past+nowcast
-- [x] `RadarTimeline` componente: play/pause, skip-back, slider, etiqueta hora + indicador pasado/prediccion
-- [x] Slider con `@react-native-community/slider` para scrub manual de frames
-- [x] Animacion ejecutada en WebView (Leaflet) via `injectRadarAnimation()` — loop nativo JS sin bridge
-- [x] `injectRadarPause()` + `injectRadarFrame()` para pausa y seleccion manual
-- [x] Separacion visual pasado (azul) vs prediccion (naranja) en timeline
-- [x] Comunicacion WebView→RN: `frameChange` message para sincronizar indice
-- [x] Timeline visible solo en capa precipitation
-- [x] Al cambiar capa no-radar, auto-stop de animacion
-- [x] `LayerSelector` recibe `showRadarTimeline` prop para ajustar posicion
+### Fase 9 — Navegación + Layout
+- [ ] Layout principal responsive (bottom nav mobile / sidebar desktop)
+- [ ] React Router con lazy loading por ruta
+- [ ] Favicon + meta tags OG
+- [ ] Transiciones de página
 
-### Fase 10 — Widgets de Pantalla de Inicio *(POSTPUESTO — requiere Expo SDK 55+, actual en 54)*
-- [ ] Widget pequeno (2x1): ciudad + temperatura + condicion + max/min
-- [ ] Widget mediano (4x2): ciudad + temperatura + condicion + prevision 4 dias
-- [ ] Layouts XML: `widget_weather_small.xml`, `widget_weather_medium.xml`
-- [ ] Backgrounds adaptativos claro/oscuro: `widget_bg_dark.xml`, `widget_bg_light.xml`
-- [ ] `WeatherWidgetProvider` (Kotlin): lee datos de SharedPreferences, actualiza RemoteViews
-- [ ] `WeatherWidgetMediumProvider` (Kotlin): extiende provider para widget mediano
-- [ ] Modulo nativo Expo `tiempo-widget`: `TiempoWidgetModule` escribe en SharedPreferences + broadcast
-- [ ] Hook `useWidgetUpdater`: escribe datos del clima en widget cada 5 min (debounce)
-- [ ] Integracion en Home: `useWidgetUpdater(cityName, weather)`
-- [ ] Declaracion en AndroidManifest.xml con APPWIDGET_UPDATE + custom broadcast
-- [ ] `widget_weather_small_info.xml` + `widget_weather_medium_info.xml` (AppWidgetProviderInfo)
-- [ ] Auto-update cada 30 min via `updatePeriodMillis`
-- [ ] Click en widget abre la app (PendingIntent → MainActivity)
-- [ ] Colores de texto adaptativos segun modo del sistema (isDarkMode)
-> **NOTA:** `expo-widgets` y `@expo/ui` (que incluye `ComposeViewFunctionDefinitionBuilder`) requieren Expo 55.
-> La app usa Expo 54, por lo que la integracion crashea con `ClassNotFoundException`.
-> Se retomara esta fase al migrar a Expo SDK 55.
-
-## Version Actual
-
-**v4.0** — Rediseño UI + Mapa simplificado + Previsión colapsable:
-- Previsión actual + 7 días (Open-Meteo + AEMET) — **colapsable**: 4 días por defecto, expandible a 7
-- Cabecera de ciudad rediseñada: nombre grande centrado (30px, 2 líneas)
-- CurrentWeather simplificado: sin nombre de ciudad duplicado
-- **Gráfico de probabilidad de lluvia**: área/línea SVG con curva Bezier 24h
-- Gestión de ciudades con GPS y swipe-to-delete
-- Mareas con gráfico SVG, tabla 7 días, estado del mar, horarios de pleamar/bajamar
-- Alertas oficiales AEMET integradas: API key configurable, merge inteligente sin duplicados
-- Umbrales ajustados (menos ruido): viento 50/65/90, UV 8/10/12, temp 40/44
-- Mapa meteorológico interactivo con 5 capas (RainViewer, satélite, OWM) — etiqueta de capa activa, botones mejorados en modo oscuro. Capa de humedad eliminada
-- Animación de radar en tiempo real con timeline de frames (play/pause/scrub)
-- Calidad del Aire (AQI europeo) con detalle expandible (PM2.5, PM10, O3, NO2) — corrección colores monocromos en oscuro
-- Fase Lunar con SVGs custom + orto/ocaso lunar + amanecer/atardecer
-- *(Widgets postpuesto — requiere Expo 55)*
-- Estilo de iconos configurable (color/monocromo)
-- Animaciones de partículas climáticas: lluvia 30, tormenta 40, nieve 20, niebla 8, destellos 10-15, nubes 3-5
-- Modo claro/oscuro con gradientes dinámicos
-- EAS Build configurado (development, preview, production — APK)
-- EAS Build production v4.0 subido (APK firmado)
+### Fase 10 — Docker + Deploy
+- [ ] Verificar Dockerfile multi-stage (build → nginx)
+- [ ] Verificar nginx.conf (SPA fallback, gzip, cache)
+- [ ] Variables de entorno para API keys por defecto
+- [ ] Healthcheck endpoint funcional
+- [ ] Docker Compose producción funcional
 
 ## Principios de Diseño (estilo Apple Weather)
 
 - **Fondo dinámico**: Gradiente que cambia según condición + modo (claro/oscuro)
-- **Tipografía grande**: Temps en font-size 96+, peso light
-- **Cards semitransparentes**: glassmorphism sutil con blur backdrop
-  - Claro: `rgba(255,255,255,0.25)`
-  - Oscuro: `rgba(0,0,0,0.3)`
-- **Scroll vertical único**: Todo en una columna, sin tabs inferiores
-- **Animaciones sutiles**: Transiciones con Reanimated, parallax en scroll
+- **Tipografía grande**: Temps en font-size 72px+, peso light
+- **Cards glassmorphism**: `backdrop-filter: blur()` + fondo semitransparente
+- **Scroll vertical único**: Todo en una columna, sin tabs
+- **Animaciones CSS**: Transiciones suaves, partículas con keyframes
 - **Zero bordes**: Esquinas redondeadas, sin líneas separadoras
-- **Consistencia de tema**: Todo componente responde al modo activo
+- **Mobile-first**: Diseño optimizado para móvil, adaptado a desktop
 
 ## Paleta de Gradientes por Condición
 
 ### Modo Claro
 | Condición | Gradiente |
 |-----------|-----------|
-| Soleado | `#FF9500` → `#FFCC00` |
-| Parcialmente nublado | `#5AC8FA` → `#B2EBF2` |
-| Nublado | `#8E8E93` → `#C7C7CC` |
-| Lluvia | `#546E7A` → `#90A4AE` |
-| Tormenta | `#37474F` → `#607D8B` |
-| Nieve | `#E0E0E0` → `#F5F5F5` |
-| Noche despejada | `#0D1B2A` → `#1B2838` |
-| Noche nublada | `#1A1A2E` → `#2D2D44` |
+| Soleado | `#7DD3FC` → `#FDBA74` |
+| Parcialmente nublado | `#BAE6FD` → `#E0F2FE` |
+| Nublado | `#E2E8F0` → `#CBD5E0` |
+| Lluvia | `#93C5FD` → `#BFDBFE` |
+| Tormenta | `#94A3B8` → `#CBD5E0` |
+| Nieve | `#F1F5F9` → `#E2E8F0` |
+| Niebla | `#D1D5DB` → `#E5E7EB` |
+| Noche despejada | `#E2E8F0` → `#CBD5E0` |
+| Noche nublada | `#CBD5E0` → `#A0AEC0` |
 
 ### Modo Oscuro
 | Condición | Gradiente |
 |-----------|-----------|
-| Soleado | `#1A237E` → `#283593` |
-| Parcialmente nublado | `#1A2940` → `#2C3E50` |
-| Nublado | `#1C1C1E` → `#2C2C2E` |
-| Lluvia | `#0D1117` → `#1B2838` |
-| Tormenta | `#0A0A0A` → `#1A1A2E` |
-| Nieve | `#1C1C1E` → `#3A3A3C` |
-| Noche despejada | `#000000` → `#0D1B2A` |
-| Noche nublada | `#0A0A0A` → `#1A1A2E` |
+| Soleado | `#0F172A` → `#1E293B` |
+| Parcialmente nublado | `#0F172A` → `#334155` |
+| Nublado | `#1E293B` → `#334155` |
+| Lluvia | `#0F172A` → `#1E1E2C` |
+| Tormenta | `#080C14` → `#1E293B` |
+| Nieve | `#1E293B` → `#475569` |
+| Niebla | `#1E293B` → `#334155` |
+| Noche despejada | `#020617` → `#0F172A` |
+| Noche nublada | `#0F172A` → `#1E293B` |
 
 ## Estrategia de Rendimiento
 
-- **Splash screen** → datos cacheados al instante (TanStack Query cache + MMKV)
-- **Lazy loading** de pantallas con Expo Router
-- **Reanimated** para animaciones en thread de UI (no JS bridge)
-- **Memoización** agresiva de componentes de lista (`React.memo` + `useMemo`)
-- **Iconos SVG vectoriales** (no PNGs)
-- **Bundle splitting** automático por ruta
-- **Stale-while-revalidate**: mostrar cache mientras se revalida en background
-- **MMKV** para lecturas síncronas instantáneas (0ms vs AsyncStorage ~5ms)
-- **Hermes engine** habilitado (default en Expo): bytecode precompilado
+- **Vite HMR**: Desarrollo instantáneo
+- **Code splitting**: Lazy loading por ruta (React.lazy + Suspense)
+- **TanStack Query**: stale-while-revalidate, cache inteligente
+- **Tailwind CSS v4**: Solo CSS usado en producción
+- **nginx gzip**: Compresión de assets estáticos
+- **Cache headers**: 1 año para assets con hash, no-cache para HTML
+- **Preconnect**: APIs Open-Meteo en `<link rel="preconnect">`
 
 ## Orden de Ejecución
 
-1. **Fase 0**: Scaffolding + cleanup ✅
-2. **Fase 1**: Previsión actual + 7 días ✅
-3. **Fase 2**: Gestión de ciudades ✅
-4. **Fase 3**: Mareas ✅
-5. **Fase 4**: Notificaciones/Alertas ✅
-6. **Fase 5**: Mapa meteorológico ✅
-7. **Fase 6**: Capas adicionales OWM ✅
-8. **Fase 7**: Mareas v2 (pleamar/bajamar) ✅
-9. **Fase 8**: Animaciones de particulas climaticas ✅
-10. **Fase 9**: Animacion de radar en tiempo real (timeline RainViewer) ✅
-11. **Fase 10**: Widgets de pantalla de inicio *(postpuesto — requiere Expo 55)*
-12. **Fase 11**: Calidad del Aire (AQI) — card en Home
-13. **Fase 12**: Fase Lunar + orto/ocaso lunar — card en Home
-14. **Fase 13**: Nowcasting — "Lluvia en los próximos 60 min"
-15. **Fase 14**: Swipe horizontal entre ciudades en Home
-16. **Fase 15**: Internacionalización — unidades de distancia (km/mi), presión, más
-
-Cada fase incluye verificación en dispositivo Android vía EAS Build.
-
----
-
-## Fases Futuras (Plan Detallado)
-
-### Fase 11 — Calidad del Aire (AQI)
-- [x] Tipos `AirQualityData` + helpers `getAQILabel/getAQIDescription/getAQIColor` en `types/weather.ts`
-- [x] Servicio `getAirQuality(lat, lon)` en `services/openmeteo.ts` → Open-Meteo `/v1/air-quality`
-- [x] Parametros: `pm2_5`, `pm10`, `ozone`, `nitrogen_dioxide`, `european_aqi`
-- [x] Hook `useAirQuality(lat, lon)` con TanStack Query (stale 30min, gcTime 60min, retry 1)
-- [x] Componente `AirQualityCard`: AQI europeo con color semaforo EAQI (0-20 bueno, 20-40 moderado, 40-60 deficiente, 60-80 malo, 80-100 muy malo, >100 extremo)
-- [x] Barra de progreso horizontal con gradiente EAQI y marcador
-- [x] Detalle expandible (tap): PM2.5, PM10, O3, NO2 con barras de progreso
-- [x] Integracion en Home como nueva card debajo de `WeatherDetails` (delay 400)
-- [x] Adaptacion visual modo claro/oscuro + iconos colored/monochrome
-- [x] API gratuita y sin key — sin configuracion extra
-
-### Fase 12 — Fase Lunar + Orto/Ocaso Lunar
-- [x] Calculo local con algoritmo lunar (sin API externa) en `utils/lunar.ts`
-- [x] `calculateMoonPhase(date)`: edad lunar, fase (8 fases), iluminacion %
-- [x] `calculateMoonTimes(date, lat, lon)`: orto/ocaso lunar aproximado
-- [x] Hook `useLunarPhase(lat, lon, daily)` con `useMemo` (sin query API)
-- [x] Tipo `LunarPhaseData` en `types/weather.ts`
-- [x] Componente `MoonPhaseCard`: 8 SVGs custom con `react-native-svg`
-- [x] Fases lunares: Luna nueva, Creciente, Cuarto creciente, Gibosa creciente, Luna llena, Gibosa menguante, Cuarto menguante, Menguante
-- [x] Amanecer/Atardecer con iconos Sunrise/Sunset (lucide)
-- [x] Orto/Ocaso lunar con iconos Moon (lucide)
-- [x] Integracion en Home debajo de AirQualityCard (delay 500)
-- [x] Adaptacion visual modo claro/oscuro + iconos colored/monochrome
-
-### Fase 13 — Nowcasting: "Lluvia en los próximos 60 min"
-- [ ] Analisis de frames RainViewer para inferir precipitacion acercandose
-- [ ] Algoritmo: comparar intensidad de radar en frames sucesivos alrededor de la ubicacion
-- [ ] Componente `NowcastingBanner`: "Empieza a llover en ~15 min" / "Lluvia disminuyendo"
-- [ ] Banner contextual en Home (debajo de ciudad, arriba de alerts)
-- [ ] Notificacion tipo DarkSky: alerta proactiva de lluvia inminente
-- [ ] Configurable en ajustes de notificaciones (toggle "Nowcasting")
-- [ ] Solo activo cuando hay datos de radar disponibles y GPS activo
-
-### Fase 14 — Swipe Horizontal entre Ciudades en Home
-- [ ] `FlatList` horizontal con `pagingEnabled` envolviendo el contenido de Home
-- [ ] Cada "pagina" = la Home completa para una ciudad guardada
-- [ ] Indicador de puntos (dots) en la parte inferior mostrando ciudad activa
-- [ ] Transicion suave entre ciudades con `Animated` o Reanimated
-- [ ] Cambio de ciudad en store al hacer swipe
-- [ ] Los datos del clima se cargan con `useWeather` por cada ciudad (pre-caching con TanStack Query)
-- [ ] Optimizacion: precargar datos de ciudades adyacentes en background
-- [ ] Solo en Home — resto de pantallas usan ciudad activa normal
-
-### Fase 15 — Internacionalización: Unidades Adicionales
-- [ ] `AppSettings` ampliado: `distanceUnit: "km" | "mi"`, `pressureUnit: "hPa" | "inHg" | "mmHg"`
-- [ ] Seccion "Unidades" ampliada en Settings con todos los selectores
-- [ ] Distancia: km (metrico) vs mi (imperial) — afecta visibilidad
-- [ ] Presion: hPa (default) vs inHg (imperial) vs mmHg
-- [ ] Velocidad del viento: ya tiene kmh/mph/ms/knots — mantener
-- [ ] Temperatura: ya tiene celsius/fahrenheit — mantener
-- [ ] Funciones helper: `formatDistance()`, `formatPressure()` en `utils/units.ts`
-- [ ] Aplicar formato en `WeatherDetails` y `AirQualityCard`
-- [ ] Widget respeta unidades configuradas
-
-### Seguridad — Hardening v3.0
-- [x] Eliminados `react-native-windows` (4 HIGH CVEs), `@types/react-native` (deprecated), `react-native-web` (innecesaria como dep directa)
-- [x] AndroidManifest: eliminados permisos peligrosos (`SYSTEM_ALERT_WINDOW`, `READ/WRITE_EXTERNAL_STORAGE`), `allowBackup=false`
-- [x] WeatherMap WebView: SRI hashes en Leaflet CDN, `originWhitelist` restringido, `sanitizeUrl()` para URLs inyectadas; `data:image/*` único esquema `data:` permitido
-- [x] AEMET: `res.ok` en segundo fetch (`data.datos`) — errores HTTP ya no se parsean como datos válidos
-- [x] Search: `AbortController` en `search.tsx` + `signal` en `searchCities()` — race condition fix
-- [x] `react-native-worklets` 0.5.1 → 0.8.1 (requerido por reanimated 4.3.0)
-- [x] Deps actualizadas dentro de SDK 54 (expo, metro-config, linking, notifications, tanstack, lucide, svg, nitro-modules, slider, safe-area, reanimated, screens)
-- [x] Vulnerabilidades: 24 → 13 (0 HIGH, 13 moderate transitivos de Expo SDK 54)
-
-### Calidad v3.0 — Bugs, Rendimiento y Animaciones
-- [x] `formatTemperature()` aplicado en CurrentWeather, HourlyForecast, DailyForecast, WeatherDetails, WeatherMap; `formatWind()` en WeatherDetails
-- [x] GPS stale closure: `requestAndSet` devuelve `City | null` en settings y search
-- [x] AlertBanner: `dismissRef` (RN no tiene event bubbling)
-- [x] HourlyForecast: horas parseadas del string ISO (fix timezone del dispositivo)
-- [x] WeatherMap `html` en `useMemo` sin deps de animación — WebView no se destruye por cada frame de radar
-- [x] ThemeProvider `useMemo`; ThemedCard/ThemedText `StyleSheet.create`; HourlyForecast `ScrollView` → `FlatList`; TideChart SVG en `useMemo`
-- [x] SwipeableCityRow y Skeleton migrados a Reanimated + GestureHandler (UI thread)
-- [x] WeatherParticles: contadores ajustados (lluvia 30, tormenta 40, nieve 20, niebla 8, nubes 3-5)
-- [x] Eliminados `Original.png` (2,2 MB) + `assets/Old/` (464 KB); no-op `useEffect` en `useTheme`
+1. **Fase 0**: Scaffolding + monorepo ✅
+2. **Fase 1**: Clima actual + 7 días
+3. **Fase 2**: Gestión de ciudades
+4. **Fase 3**: Mareas
+5. **Fase 4**: Alertas AEMET
+6. **Fase 5**: Mapa interactivo
+7. **Fase 6**: AQI + Fase Lunar
+8. **Fase 7**: Animaciones + Tema
+9. **Fase 8**: Ajustes
+10. **Fase 9**: Navegación + Layout
+11. **Fase 10**: Docker + Deploy
