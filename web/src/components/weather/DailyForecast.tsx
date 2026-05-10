@@ -30,7 +30,7 @@ export function DailyForecast({ daily, temperatureUnit, iconStyle }: DailyForeca
           const barWidth = ((day.tempMax - day.tempMin) / range) * 100;
           return (
             <div key={day.date} className="flex items-center gap-3 py-2.5">
-              <span className="w-12 shrink-0 text-base font-medium text-slate-700 dark:text-slate-200">
+              <span className="w-16 shrink-0 text-base font-medium text-slate-700 dark:text-slate-200">
                 {formatDayName(day.date)}
               </span>
               <WeatherIcon condition={day.condition} colored={iconStyle === "colored"} size={20} />

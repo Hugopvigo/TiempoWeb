@@ -66,8 +66,8 @@ export function WeatherDetails({ current, temperatureUnit, windUnit }: WeatherDe
             <Icon size={16} className={iconColor} />
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-300">{label}</span>
           </div>
-          <p className="text-xl font-semibold text-slate-800 dark:text-white">{values[key].value}</p>
-          <p className="text-xs text-slate-500 dark:text-slate-300">{values[key].detail}</p>
+          <p className="text-center text-xl font-semibold text-slate-800 dark:text-white">{values[key].value}</p>
+          <p className="text-center text-xs text-slate-500 dark:text-slate-300">{values[key].detail}</p>
         </div>
       ))}
     </div>
