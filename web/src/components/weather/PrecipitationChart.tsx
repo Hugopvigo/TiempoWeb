@@ -10,8 +10,8 @@ export function PrecipitationChart({ hourly }: PrecipitationChartProps) {
 
   const maxPrecip = Math.max(...hourly.map((h) => h.precipitationChance), 1);
   const width = hourly.length * 28;
-  const height = 80;
-  const padding = { top: 8, bottom: 20, left: 4, right: 4 };
+  const height = 140;
+  const padding = { top: 12, bottom: 24, left: 4, right: 4 };
   const chartH = height - padding.top - padding.bottom;
 
   const points = hourly.map((h, i) => ({
@@ -44,16 +44,16 @@ export function PrecipitationChart({ hourly }: PrecipitationChartProps) {
           <path d={areaPath} fill="url(#precipGrad)" />
           <path d={linePath} fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           {points.filter((_, i) => i % 3 === 0).map((p) => (
-            <circle key={p.time} cx={p.x} cy={p.y} r="2.5" fill="#3B82F6" />
+            <circle key={p.time} cx={p.x} cy={p.y} r="3.5" fill="#3B82F6" />
           ))}
           {points.filter((_, i) => i % 4 === 0).map((p) => (
             <text
               key={`t-${p.time}`}
               x={p.x}
-              y={height - 2}
+              y={height - 6}
               textAnchor="middle"
               className="fill-slate-400 dark:fill-slate-300"
-              fontSize="8"
+              fontSize="9"
             >
               {formatShortHour(p.time)}
             </text>
