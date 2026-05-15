@@ -13,7 +13,7 @@ export function DynamicBackground({ condition, isDark, children }: DynamicBackgr
 
   return (
     <div
-      className="min-h-screen transition-all duration-700 ease-in-out"
+      className="h-full transition-all duration-700 ease-in-out"
       style={{ background: `linear-gradient(180deg, ${from} 0%, ${to} 100%)` }}
     >
       {children}

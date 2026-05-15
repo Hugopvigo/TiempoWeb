@@ -71,8 +71,9 @@ export default function SearchPage() {
   const existingIds = new Set(cities.map((c) => c.id));
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 pt-4 dark:bg-slate-950">
-      <div className="mx-auto max-w-lg pb-24">
+    <div className="flex h-dvh flex-col bg-slate-50 dark:bg-slate-950">
+      <div className="flex-1 overflow-y-auto px-4 pt-4">
+      <div className="mx-auto max-w-lg">
         <div className="mb-4 flex items-center gap-3">
           <button onClick={() => navigate("/")} className="text-slate-600 dark:text-slate-300">
             <ArrowLeft size={24} />
@@ -148,6 +149,7 @@ export default function SearchPage() {
             No se encontraron ciudades
           </p>
         )}
+      </div>
       </div>
       <BottomNavBar />
     </div>

@@ -33,8 +33,8 @@ export default function Home() {
 
   return (
     <DynamicBackground condition={condition} isDark={isDark}>
-      <div className="flex min-h-screen flex-col">
-        <div className="flex-1 overflow-y-auto px-4 pb-24 pt-4">
+      <div className="flex h-dvh flex-col">
+        <div className="flex-1 overflow-y-auto px-4 pb-4 pt-4">
           <div className="mx-auto flex max-w-lg flex-col gap-4">
             <button
               onClick={() => setCitySelectorOpen(true)}

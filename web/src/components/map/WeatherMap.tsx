@@ -9,7 +9,6 @@ import { getRadarTileUrl, getSatelliteTileUrl, getOpenWeatherMapTileUrl } from "
 import type { RainViewerData } from "@shared/services/weatherLayers";
 import { Layers, Play, Pause, SkipBack, SkipForward, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router";
-import { BottomNavBar } from "@/components/ui";
 
 type LayerType = "radar" | "satellite" | "temp" | "wind" | "pressure";
 
@@ -135,75 +134,72 @@ export function WeatherMap() {
   }, [isPlaying, totalFrames]);
 
   return (
-    <div className="relative flex min-h-screen flex-col">
-      <div className="flex-1">
-        <div ref={containerRef} className="h-[calc(100vh-140px)] w-full" />
+    <div className="relative h-screen overflow-hidden">
+      <div ref={containerRef} className="h-full w-full" />
 
-        <div className="absolute left-4 top-4 z-[1000]">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-1.5 rounded-2xl border border-transparent bg-white/90 px-3 py-2 shadow-lg backdrop-blur-md dark:border-white/10 dark:bg-slate-800 dark:text-slate-200"
-          >
-            <ArrowLeft size={16} />
-            <span className="text-sm font-semibold">Volver</span>
-          </button>
-        </div>
-
-        <div className="absolute bottom-20 left-1/2 z-[1000] -translate-x-1/2">
-        <div className="flex items-center gap-1 rounded-2xl border border-transparent bg-white/90 px-3 py-2 shadow-lg backdrop-blur-md dark:border-white/10 dark:bg-slate-800">
-        <Layers size={14} className="text-slate-400 dark:text-slate-300" />
-            {(Object.keys(LAYER_LABELS) as LayerType[]).map((layer) => (
-              <button
-                key={layer}
-                onClick={() => {
-                  setActiveLayer(layer);
-                  setRadarFrame(0);
-                  setIsPlaying(false);
-                }}
-                disabled={layer !== "radar" && layer !== "satellite" && !owmKey}
-                className={`rounded-xl px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-30 ${
-                  activeLayer === layer
-                    ? "bg-blue-500 text-white"
-                    : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
-                }`}
-              >
-                {LAYER_LABELS[layer]}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {(activeLayer === "radar" || activeLayer === "satellite") && totalFrames > 0 && (
-          <div className="absolute bottom-32 left-1/2 z-[1000] -translate-x-1/2">
-            <div className="flex items-center gap-3 rounded-2xl border border-transparent bg-white/90 px-4 py-2 shadow-lg backdrop-blur-md dark:border-white/10 dark:bg-slate-800">
-                <button onClick={() => setRadarFrame(0)} className="text-slate-500 dark:text-slate-300">
-                  <SkipBack size={16} />
-                </button>
-                <button onClick={() => setIsPlaying(!isPlaying)} className="text-blue-500 dark:text-blue-400">
-                  {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-                </button>
-                <button onClick={() => setRadarFrame(totalFrames - 1)} className="text-slate-500 dark:text-slate-300">
-                  <SkipForward size={16} />
-                </button>
-              <input
-                type="range"
-                min={0}
-                max={totalFrames - 1}
-                value={radarFrame}
-                onChange={(e) => {
-                  setRadarFrame(Number(e.target.value));
-                  setIsPlaying(false);
-                }}
-                className="w-24 accent-blue-500"
-              />
-                <span className="text-xs text-slate-500 dark:text-slate-300">
-                {radarFrame + 1}/{totalFrames}
-              </span>
-            </div>
-          </div>
-        )}
+      <div className="absolute left-4 top-4 z-[1000]">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1.5 rounded-2xl border border-transparent bg-white/90 px-3 py-2 shadow-lg backdrop-blur-md dark:border-white/10 dark:bg-slate-800 dark:text-slate-200"
+        >
+          <ArrowLeft size={16} />
+          <span className="text-sm font-semibold">Volver</span>
+        </button>
       </div>
-      <BottomNavBar />
+
+      <div className="absolute bottom-4 left-1/2 z-[1000] -translate-x-1/2">
+        <div className="flex items-center gap-1 rounded-2xl border border-transparent bg-white/90 px-3 py-2 shadow-lg backdrop-blur-md dark:border-white/10 dark:bg-slate-800">
+          <Layers size={14} className="text-slate-400 dark:text-slate-300" />
+          {(Object.keys(LAYER_LABELS) as LayerType[]).map((layer) => (
+            <button
+              key={layer}
+              onClick={() => {
+                setActiveLayer(layer);
+                setRadarFrame(0);
+                setIsPlaying(false);
+              }}
+              disabled={layer !== "radar" && layer !== "satellite" && !owmKey}
+              className={`rounded-xl px-2.5 py-1 text-xs font-semibold transition-colors disabled:opacity-30 ${
+                activeLayer === layer
+                  ? "bg-blue-500 text-white"
+                  : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
+              }`}
+            >
+              {LAYER_LABELS[layer]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {(activeLayer === "radar" || activeLayer === "satellite") && totalFrames > 0 && (
+        <div className="absolute bottom-16 left-1/2 z-[1000] -translate-x-1/2">
+          <div className="flex items-center gap-3 rounded-2xl border border-transparent bg-white/90 px-4 py-2 shadow-lg backdrop-blur-md dark:border-white/10 dark:bg-slate-800">
+            <button onClick={() => setRadarFrame(0)} className="text-slate-500 dark:text-slate-300">
+              <SkipBack size={16} />
+            </button>
+            <button onClick={() => setIsPlaying(!isPlaying)} className="text-blue-500 dark:text-blue-400">
+              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+            </button>
+            <button onClick={() => setRadarFrame(totalFrames - 1)} className="text-slate-500 dark:text-slate-300">
+              <SkipForward size={16} />
+            </button>
+            <input
+              type="range"
+              min={0}
+              max={totalFrames - 1}
+              value={radarFrame}
+              onChange={(e) => {
+                setRadarFrame(Number(e.target.value));
+                setIsPlaying(false);
+              }}
+              className="w-24 accent-blue-500"
+            />
+            <span className="text-xs text-slate-500 dark:text-slate-300">
+              {radarFrame + 1}/{totalFrames}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

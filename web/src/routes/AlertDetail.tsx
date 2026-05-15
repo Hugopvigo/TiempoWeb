@@ -20,13 +20,15 @@ export default function AlertDetail() {
 
   if (!alert) {
     return (
-      <div className="min-h-screen bg-slate-50 px-4 pt-4 dark:bg-slate-950">
-        <div className="mx-auto max-w-lg pb-24">
-          <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-slate-600 dark:text-slate-300">
-            <ArrowLeft size={20} />
-            Volver
-          </button>
-          <p className="text-slate-500 dark:text-slate-300">Alerta no encontrada</p>
+      <div className="flex h-dvh flex-col bg-slate-50 dark:bg-slate-950">
+        <div className="flex-1 overflow-y-auto px-4 pt-4">
+          <div className="mx-auto max-w-lg">
+            <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-slate-600 dark:text-slate-300">
+              <ArrowLeft size={20} />
+              Volver
+            </button>
+            <p className="text-slate-500 dark:text-slate-300">Alerta no encontrada</p>
+          </div>
         </div>
         <BottomNavBar />
       </div>
@@ -37,8 +39,9 @@ export default function AlertDetail() {
 
   return (
     <DynamicBackground condition="clear" isDark={isDark}>
-      <div className="min-h-screen px-4 pt-4">
-        <div className="mx-auto max-w-lg pb-24">
+      <div className="flex h-dvh flex-col px-4 pt-4">
+        <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-lg">
           <button onClick={() => navigate(-1)} className="mb-4 flex items-center gap-2 text-slate-600 dark:text-slate-300">
             <ArrowLeft size={20} />
             Volver
@@ -73,9 +76,10 @@ export default function AlertDetail() {
         </div>
       </div>
     </div>
-    <BottomNavBar />
-  </div>
-</DynamicBackground>
+        </div>
+        <BottomNavBar />
+      </div>
+    </DynamicBackground>
   );
 }
 
