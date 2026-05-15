@@ -134,7 +134,7 @@ export function WeatherMap() {
   }, [isPlaying, totalFrames]);
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="relative h-dvh">
       <div ref={containerRef} className="h-full w-full" />
 
       <div className="absolute left-4 top-4 z-[1000]">
