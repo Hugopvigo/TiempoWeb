@@ -160,4 +160,12 @@ docker compose up -d app --build
 
 MIT — consulta [LICENSE](LICENSE) para más detalles.
 
-Desarrollado por Hugo Perez-Vigo
+---
+
+<div align="center">
+
+**Desarrollado por [Hugo Perez-Vigo](https://hugopvigo.es)** · [@hugopvigo](https://x.com/hugopvigo)
+
+[![GitHub](https://img.shields.io/badge/GitHub-Hugopvigo-181717?style=for-the-badge&logo=github)](https://github.com/Hugopvigo)
+
+</div>
