@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6.svg?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4.svg?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-blue)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 **Tiempo** es una aplicación meteorológica web inspirada en Apple Weather. Combina datos oficiales de la **AEMET** para España con la cobertura global de **Open-Meteo**, todo con una estética minimalista de fondos degradados dinámicos y glassmorphism.
 
@@ -158,7 +158,7 @@ docker compose up -d app --build
 
 ## Licencia
 
-MIT — consulta [LICENSE](LICENSE) para más detalles.
+**CC BY-NC-SA 4.0** — Consulta [LICENSE](LICENSE) para más detalles.
 
 ---
 
