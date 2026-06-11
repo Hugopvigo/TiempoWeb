@@ -56,11 +56,7 @@ function capEventToType(event: string): WeatherAlert["type"] | null {
 }
 
 function bytesToString(bytes: Uint8Array): string {
-  let result = "";
-  for (let i = 0; i < bytes.length; i++) {
-    result += String.fromCharCode(bytes[i]);
-  }
-  return result;
+  return new TextDecoder("utf-8").decode(bytes);
 }
 
 function parseTar(buffer: ArrayBuffer): string[] {
@@ -212,7 +208,7 @@ export async function getAEMETForecast(municipioCode: string) {
 }
 
 export async function getAEMETTides(puertoCode: string) {
-  return aemetFetch<any>(`/api/prediccion/maritiva/puerto/${puertoCode}`);
+  return aemetFetch<any>(`/api/prediccion/maritima/puerto/${puertoCode}`);
 }
 
 export function isAEMETConfigured(): boolean {
