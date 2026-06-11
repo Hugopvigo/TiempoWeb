@@ -8,6 +8,7 @@ interface OpenMeteoResponse {
   latitude: number;
   longitude: number;
   current: {
+    time: string;
     temperature_2m: number;
     relative_humidity_2m: number;
     apparent_temperature: number;
@@ -78,12 +79,11 @@ export async function getWeather(lat: number, lon: number, cityName: string): Pr
   const current = data.current;
   const isDay = current.is_day === 1;
 
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentHourIndex = data.hourly.time.findIndex((t) => {
-    const hour = parseInt(t.split("T")[1]?.split(":")[0] ?? "0", 10);
-    return hour >= currentHour;
-  });
+  // current.time viene en la zona horaria de la ciudad, igual que hourly.time
+  const currentHourPrefix = (current.time ?? "").slice(0, 13);
+  const currentHourIndex = data.hourly.time.findIndex(
+    (t) => t.slice(0, 13) === currentHourPrefix
+  );
   const fallbackHourIndex = currentHourIndex >= 0 ? currentHourIndex : 0;
 
   return {
