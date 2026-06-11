@@ -25,10 +25,10 @@ export function LunarPhaseCard({ data }: LunarPhaseCardProps) {
 
       <div className="grid grid-cols-2 gap-2">
         {data.moonrise && (
-          <TimeRow icon={Moon} iconColor="text-indigo-400 dark:text-indigo-300" label="Moonrise" value={data.moonrise} />
+          <TimeRow icon={Moon} iconColor="text-indigo-400 dark:text-indigo-300" label="Salida luna" value={data.moonrise} />
         )}
         {data.moonset && (
-          <TimeRow icon={Moon} iconColor="text-indigo-400 dark:text-indigo-300" label="Moonset" value={data.moonset} />
+          <TimeRow icon={Moon} iconColor="text-indigo-400 dark:text-indigo-300" label="Puesta luna" value={data.moonset} />
         )}
         {data.sunrise && (
           <TimeRow icon={Sunrise} iconColor="text-orange-500 dark:text-orange-300" label="Amanecer" value={formatTime(data.sunrise)} />
