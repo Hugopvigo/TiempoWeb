@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import type { City } from "@shared/types/weather";
 
 interface LocationState {
@@ -11,9 +11,14 @@ interface LocationState {
 export function useLocation(): LocationState {
   const [city, setCity] = useState<City | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const requestAndSet = useCallback(async (): Promise<City | null> => {
+    if (!navigator.geolocation) {
+      setError("Geolocalización no disponible");
+      return null;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -39,16 +44,13 @@ export function useLocation(): LocationState {
 
       try {
         const res = await fetch(
-          `https://geocoding-api.open-meteo.com/v1/search?name=&latitude=${lat}&longitude=${lon}&count=1&language=es`
+          `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`
         );
         if (res.ok) {
           const data = await res.json();
-          if (data.results?.[0]) {
-            const r = data.results[0];
-            locationCity.name = r.name || "Mi ubicación";
-            locationCity.country = r.country || "";
-            locationCity.admin1 = r.admin1 || "";
-          }
+          locationCity.name = data.city || data.locality || "Mi ubicación";
+          locationCity.country = data.countryName || "";
+          locationCity.admin1 = data.principalSubdivision || "";
         }
       } catch {
         // fallback to "Mi ubicación"
@@ -63,15 +65,6 @@ export function useLocation(): LocationState {
       setLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      requestAndSet();
-    } else {
-      setLoading(false);
-      setError("Geolocalización no disponible");
-    }
-  }, [requestAndSet]);
 
   return { city, error, loading, requestAndSet };
 }
