@@ -110,7 +110,8 @@ interface SettingsState {
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
-  settings: safeParse(savedSettings, defaultSettings),
+  // merge con defaults para no perder claves nuevas en ajustes guardados antiguos
+  settings: { ...defaultSettings, ...safeParse(savedSettings, defaultSettings) },
 
   updateSettings: (partial) => {
     const { settings } = get();
