@@ -1,14 +1,15 @@
 import type { WeatherCondition } from "../types/weather";
 
 export const weatherCodeToCondition = (code: number, isDay: boolean): WeatherCondition => {
-  if (code === 0) return isDay ? "clear" : "night_clear";
-  if (code <= 3) return isDay ? "partly_cloudy" : "night_cloudy";
+  if (code <= 1) return isDay ? "clear" : "night_clear";
+  if (code === 2) return isDay ? "partly_cloudy" : "night_cloudy";
+  if (code === 3) return isDay ? "cloudy" : "night_cloudy";
   if (code <= 49) return "fog";
-  if (code <= 59) return "rain";
-  if (code <= 69) return "snow";
-  if (code <= 79) return "rain";
-  if (code <= 84) return "rain";
-  if (code <= 86) return "snow";
+  if (code <= 57) return "rain"; // llovizna 51-57
+  if (code <= 67) return "rain"; // lluvia 61-67
+  if (code <= 79) return "snow"; // nieve 71-77
+  if (code <= 82) return "rain"; // chubascos 80-82
+  if (code <= 86) return "snow"; // chubascos de nieve 85-86
   if (code <= 99) return "storm";
   return "cloudy";
 };
