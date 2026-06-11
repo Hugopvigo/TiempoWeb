@@ -3,6 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useWeatherLayers } from "@/hooks/useWeatherLayers";
 import { useCities } from "@/hooks/useCities";
+import { useTheme } from "@/hooks/useTheme";
 import { useCityStore } from "@/stores/cityStore";
 import { useSettingsStore } from "@/stores/cityStore";
 import { getRadarTileUrl, getSatelliteTileUrl, getOpenWeatherMapTileUrl } from "@shared/services/weatherLayers";
@@ -35,16 +36,7 @@ export function WeatherMap() {
   const [radarFrame, setRadarFrame] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const playIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
-    const obs = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains("dark"));
-    });
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
+  const { isDark } = useTheme();
 
   const baseTiles = isDark
     ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -75,6 +67,8 @@ export function WeatherMap() {
       map.remove();
       mapRef.current = null;
     };
+    // solo inicialización: el centro y las tiles se actualizan en efectos posteriores
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
