@@ -3,12 +3,12 @@ import type { City } from "../types/weather";
 const KNOWN_COASTAL_CITIES = new Set([
   "barcelona", "valencia", "málaga", "malaga", "cádiz", "cadiz",
   "san sebastián", "san sebastian", "bilbao", "santander", "gijón", "gijon",
-  "a coruña", "coruna", "vigo", "vigo", "alicante", "cartagena",
+  "a coruña", "coruna", "vigo", "alicante", "cartagena",
   "palma de mallorca", "palma", "santa cruz de tenerife",
   "las palmas de gran canaria", "las palmas", "huelva", "almería", "almeria",
   "tarragona", "castellón", "castellon", "pontevedra", "lugo-costera",
   "ceuta", "melilla", "motril", "fuengirola", "marbella", "benidorm",
-  "torrevieja", "elche", "hondarribia", "getxo", " Castro-Urdiales",
+  "torrevieja", "elche", "hondarribia", "getxo", "castro-urdiales", "castro urdiales",
   "villaviciosa", "llanes", "ribadesella", "cudillero", "avilés", "aviles",
   "ferrol", "nazare", "cangas", "baiona", "nigran",
 ]);
