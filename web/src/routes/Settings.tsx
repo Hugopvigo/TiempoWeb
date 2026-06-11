@@ -1,5 +1,6 @@
 import { useSettingsStore } from "@/stores/cityStore";
 import { useCities } from "@/hooks/useCities";
+import type { AppSettings, City } from "@shared/types/weather";
 import { DynamicBackground } from "@/components/theme";
 import { BottomNavBar } from "@/components/ui";
 import { useTheme } from "@/hooks/useTheme";
@@ -53,7 +54,12 @@ function SectionCard({ title, children }: { title: string; children: React.React
   );
 }
 
-function ThemeSection({ settings, updateSettings }: { settings: any; updateSettings: (p: any) => void }) {
+interface SectionProps {
+  settings: AppSettings;
+  updateSettings: (p: Partial<AppSettings>) => void;
+}
+
+function ThemeSection({ settings, updateSettings }: SectionProps) {
   const options = [
     { value: "system" as const, label: "Sistema", icon: Monitor },
     { value: "light" as const, label: "Claro", icon: Sun },
@@ -82,7 +88,7 @@ function ThemeSection({ settings, updateSettings }: { settings: any; updateSetti
   );
 }
 
-function UnitsSection({ settings, updateSettings }: { settings: any; updateSettings: (p: any) => void }) {
+function UnitsSection({ settings, updateSettings }: SectionProps) {
   const tempUnits = [
     { value: "celsius" as const, label: "°C" },
     { value: "fahrenheit" as const, label: "°F" },
@@ -139,7 +145,7 @@ function UnitsSection({ settings, updateSettings }: { settings: any; updateSetti
   );
 }
 
-function IconsSection({ settings, updateSettings }: { settings: any; updateSettings: (p: any) => void }) {
+function IconsSection({ settings, updateSettings }: SectionProps) {
   return (
     <SectionCard title="Estilo de iconos">
       <div className="flex gap-2">
@@ -168,9 +174,9 @@ function CitiesSection({
   setActiveCity,
   removeCity,
 }: {
-  cities: any[];
-  activeCity: any;
-  setActiveCity: (c: any) => void;
+  cities: City[];
+  activeCity: City;
+  setActiveCity: (c: City) => void;
   removeCity: (id: string) => void;
 }) {
   return (
