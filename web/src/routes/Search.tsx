@@ -18,26 +18,31 @@ export default function SearchPage() {
   const { addCity, setActiveCity, setLocationCity, cities } = useCities();
   const { requestAndSet, loading: locationLoading } = useLocation();
 
-  useEffect(() => {
-    if (!query.trim()) {
+  const handleQueryChange = useCallback((value: string) => {
+    setQuery(value);
+    if (!value.trim()) {
       setResults([]);
       setSearching(false);
-      return;
     }
+  }, []);
+
+  useEffect(() => {
+    if (!query.trim()) return;
 
     clearTimeout(debounceRef.current);
     abortRef.current?.abort();
 
     debounceRef.current = setTimeout(async () => {
-      abortRef.current = new AbortController();
+      const controller = new AbortController();
+      abortRef.current = controller;
       setSearching(true);
       try {
-        const found = await searchCities(query.trim(), abortRef.current.signal);
+        const found = await searchCities(query.trim(), controller.signal);
         setResults(found);
       } catch {
-        if (!abortRef.current.signal.aborted) setResults([]);
+        if (!controller.signal.aborted) setResults([]);
       } finally {
-        setSearching(false);
+        if (!controller.signal.aborted) setSearching(false);
       }
     }, 300);
 
@@ -86,14 +91,14 @@ export default function SearchPage() {
         <input
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => handleQueryChange(e.target.value)}
           placeholder="Nombre de la ciudad..."
           autoFocus
           className="w-full rounded-2xl bg-white py-3 pl-11 pr-10 text-sm text-slate-800 placeholder-slate-400 shadow-sm outline-none ring-1 ring-slate-200/60 focus:ring-2 focus:ring-blue-500/40 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400 dark:ring-white/10"
           />
           {query && (
             <button
-              onClick={() => setQuery("")}
+              onClick={() => handleQueryChange("")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-400"
             >
               <X size={16} />
