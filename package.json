@@ -13,6 +13,6 @@
     "preview": "npm run preview -w web"
   },
   "dependencies": {
-    "vite": "^8.0.11"
+    "vite": "^8.2.1"
   }
 }
