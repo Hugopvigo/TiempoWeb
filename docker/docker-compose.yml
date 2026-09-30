@@ -28,3 +28,4 @@ services:
       - ../shared:/app/shared
     environment:
       - CHOKIDAR_USEPOLLING=true
+    restart: unless-stopped
