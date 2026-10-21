@@ -1,3 +1,7 @@
+<meta property="og:title" content="TIEMPOWEB">
+<meta property="og:description" content="El tiempo, las mareas y las alertas de AEMET en el navegador.">
+<meta property="og:image" content="https://raw.githubusercontent.com/Hugopvigo/TiempoWeb/main/docs/capturas/og.png">
+
 <p align="center">
   <img src="docs/capturas/00-cabecera.png" alt="TiempoWeb — el tiempo, las mareas y las alertas de AEMET" width="100%">
 </p>
