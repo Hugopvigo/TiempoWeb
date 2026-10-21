@@ -99,7 +99,10 @@ cache de un año para los recursos con hash.
 El repo trae la receta de producción: el contenedor `app` publica el sitio en
 `127.0.0.1:8080` y [`info.md`](info.md) documenta el VirtualHost de Apache
 delante (proxy a ese puerto) con el SSL terminado en Cloudflare, preparado
-para el subdominio `tiempo.hugopvigo.es`.
+para el subdominio `tiempo.hugoperezvigo.es`. El dominio anterior
+(`tiempo.hugopvigo.es`) ya no resuelve: su DNS sigue en el parking de OVH,
+apuntando a una IP sin servicio. En el servidor quedan los vhosts legacy que
+redirigen (301) al dominio actual, por si vuelve a_publicarse el DNS.
 
 ```bash
 cd docker
