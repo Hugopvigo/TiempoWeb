@@ -1,171 +1,140 @@
-# Tiempo — El clima nunca se vio tan bien
+<p align="center">
+  <img src="docs/capturas/00-cabecera.png" alt="TiempoWeb — el tiempo, las mareas y las alertas de AEMET" width="100%">
+</p>
 
-[![Vite](https://img.shields.io/badge/Vite-8-646CFF.svg?style=flat&logo=vite&logoColor=white)](https://vite.dev)
-[![React](https://img.shields.io/badge/React-19-61DAFB.svg?style=flat&logo=react&logoColor=black)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6.svg?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4.svg?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com)
-[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-blue)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+<p align="center">
+  <b>El tiempo, las mareas y las alertas de AEMET en el navegador.</b><br>
+  Versión web de la app de meteorología: Vite, React y datos reales de Open-Meteo.
+</p>
 
-**Tiempo** es una aplicación meteorológica web inspirada en Apple Weather. Combina datos oficiales de la **AEMET** para España con la cobertura global de **Open-Meteo**, todo con una estética minimalista de fondos degradados dinámicos y glassmorphism.
-
-**Producción:** [https://tiempo.hugopvigo.es](https://tiempo.hugopvigo.es)
-
----
-
-## Características
-
-- **Previsión detallada**: Tiempo actual, por horas (24h), a 7 días (colapsable) y gráfico de probabilidad de lluvia SVG
-- **Calidad del Aire**: Índice EAQI europeo con detalle expandible (PM2.5, PM10, O3, NO2)
-- **Fase Lunar**: 8 fases con SVGs custom, iluminación %, orto/ocaso lunar y amanecer/atardecer
-- **Mareas**: Gráficos SVG sinusoidales, detección automática de ciudades costeras, horarios de pleamar/bajamar
-- **Alertas oficiales**: Integración directa con AEMET (CAP XML). Merge inteligente con alertas locales sin duplicados
-- **Mapa interactivo**: 5 capas — radar RainViewer, satélite, temperatura, viento y presión vía OWM. Leaflet nativo en DOM
-- **Diseño adaptativo**: Mobile-first, fondos degradados dinámicos por condición climática, glassmorphism con backdrop-filter
-- **Gestión de ciudades**: Búsqueda con autocompletado, geolocalización, localStorage persistente
-- **Modo claro/oscuro**: Detección automática del sistema con override manual
-- **Claves API configurables**: OWM y AEMET desde ajustes, sin recompilar
+<p align="center">
+  <img alt="licencia" src="https://img.shields.io/badge/licencia-CC%20BY--NC--SA%204.0-8E8E93?style=flat-square&labelColor=1a1a1e">
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&labelColor=1a1a1e">
+  <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&labelColor=1a1a1e">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-6-3178C6?style=flat-square&labelColor=1a1a1e">
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&labelColor=1a1a1e">
+</p>
 
 ---
 
-## Stack Tecnológico
+## Qué es esto
 
-| Capa | Tecnología |
-|------|-----------|
-| **Core** | Vite 8 + React 19 + TypeScript 6 |
-| **Navegación** | React Router v7 |
-| **Estilos** | Tailwind CSS v4 |
-| **Estado** | Zustand + TanStack Query v5 |
-| **Iconos** | Lucide React |
-| **Mapas** | Leaflet + RainViewer + OpenWeatherMap |
-| **Deploy** | Docker + nginx |
+Una SPA de meteorología con estética de fondo degradado y cristal, pensada
+como versión web de la app de móvil. Tres piezas:
 
----
+- **`shared/`**: el núcleo de la app nativa (React Native) portado a TypeScript
+  sin dependencias de RN —tipos, constantes, servicios y utilidades— para
+  que la web y el móvil compartan la misma lógica.
+- **`web/`**: la aplicación de navegador con Vite 8 y React 19.
+- **`docker/`**: el despliegue en contenedor, con nginx sirviendo el build.
 
-## Estructura del Proyecto
+![La pantalla de inicio de TiempoWeb](docs/capturas/01-web.png)
+*La pantalla de inicio con datos reales de Open-Meteo: temperatura, previsión
+por horas y los próximos siete días.*
 
-```text
-shared/               # Código compartido (0 deps React Native)
-├── types/            # Tipos TypeScript
-├── constants/        # Gradientes, colores, mapeos WMO, zonas AEMET
-├── services/         # API clients (Open-Meteo, AEMET, RainViewer, OWM)
-└── utils/            # Lunar, coastal detection
+## Qué muestra
 
-web/                  # App web Vite + React
-├── src/
-│   ├── routes/       # Páginas (Home, Search, Tides, Map, Settings, AlertDetail)
-│   ├── components/   # UI atómica (weather, tides, map, alerts, theme, city, ui)
-│   ├── hooks/        # Hooks adaptados + web-specific
-│   └── stores/       # Zustand + localStorage
-└── docker/           # Dockerfile, nginx.conf, docker-compose
-```
+- **Previsión**: actual, por horas y a 7 días, con gráfico de probabilidad de
+  lluvia.
+- **Mareas**: horarios de pleamar y bajamar, con detección automática de si la
+  ciudad es costera y gráfico sinusoidal.
+- **Calidad del aire**: índice EAQI europeo y el detalle de PM2.5, PM10, O3 y
+  NO2.
+- **Fase lunar**: las 8 fases, con iluminación, orto, ocaso y la hora de
+  amanecer y atardecer.
+- **Mapa interactivo** (Leaflet) con cinco capas: radar, satélite, temperatura,
+  viento y presión.
+- **Alertas**: las oficiales de AEMET combinadas con las que se deducen de los
+  propios datos, sin repetir.
+- **Ciudades**: buscador con autocompletado, geolocalización y lista
+  persistente en `localStorage`.
+- **Tema** claro/oscuro con detección automática del sistema, y unidades de
+  temperatura y viento configurables.
 
----
+### De dónde salen los datos
 
-## APIs Utilizadas
+| API | Qué trae | ¿Clave? |
+|---|---|---|
+| **Open-Meteo** | previsión, calidad del aire, datos marinos | no |
+| **Open-Meteo Geocoding** | buscador de ciudades | no |
+| **RainViewer** | radar de precipitación y satélite infrarrojo | no |
+| **CARTO** | mapa base | no |
+| **AEMET** | alertas oficiales en España | sí |
+| **OpenWeatherMap** | capas de temperatura, viento y presión | sí |
 
-| API | Uso | Requiere Key |
-|-----|-----|-------------|
-| **Open-Meteo** | Previsión global, marine, calidad del aire | No |
-| **Open-Meteo Geocoding** | Búsqueda de ciudades | No |
-| **RainViewer** | Radar de precipitación, satélite infrarrojo | No |
-| **AEMET** | Alertas oficiales España | Sí (Ajustes) |
-| **OpenWeatherMap** | Tiles de temperatura, viento, presión | Sí (Ajustes) |
+Las claves se guardan en el store de ajustes (`openWeatherMapApiKey`,
+`aemetApiKey`), pero **la versión web no tiene pantalla para introducirlas** y
+`configureAEMET()` no llega a llamarse: tal como está, las alertas oficiales
+de AEMET no llegan y las tres capas de OpenWeatherMap se quedan sin clave.
+El resto funciona sin tocar nada.
 
----
+## Desarrollo local
 
-## Desarrollo
+Monorepo con workspaces de npm: los comandos de la raíz se delegan en `web`.
 
 ```bash
-# Clonar
-git clone https://github.com/tu-usuario/tiempo-web.git
-cd tiempo-web
-
-# Instalar dependencias
 npm install
-
-# Arrancar dev server (http://localhost:3000)
-npm run dev
-
-# Build de producción
-npm run build
-
-# Preview del build
-npm run preview
+npm run dev       # Vite en http://localhost:3000
+npm run build     # tsc -b + vite build
+npm run preview   # sirve el build
+npm run lint      # eslint
 ```
 
-### Docker
+### Con Docker
 
 ```bash
-# Producción (http://localhost:8080)
+# producción: build + nginx en http://localhost:8080
 docker compose -f docker/docker-compose.yml up app
 
-# Desarrollo con HMR (http://localhost:3000)
+# desarrollo: Vite con HMR en http://localhost:3000
 docker compose -f docker/docker-compose.yml up dev
 ```
 
----
+El `Dockerfile` es multi-stage: `node:20-alpine` compila y `nginx:alpine`
+sirve `web/dist` con la SPA en fallback (`try_files … /index.html`), gzip y
+cache de un año para los recursos con hash.
 
-## Fases de Desarrollo
+## Despliegue
 
-- [x] **Fase 0:** Scaffolding, monorepo, código compartido, Docker
-- [x] **Fase 1:** Core — previsión actual + 7 días
-- [x] **Fase 2:** Gestión de ciudades
-- [x] **Fase 3:** Mareas
-- [x] **Fase 4:** Alertas AEMET
-- [x] **Fase 5:** Mapa interactivo
-- [x] **Fase 6:** Calidad del Aire + Fase Lunar
-- [x] **Fase 7:** Animaciones + Tema
-- [x] **Fase 8:** Ajustes
-- [x] **Fase 9:** Navegación + Layout
-- [x] **Fase 10:** Docker + Deploy
-
----
-
-## Despliegue en Producción
-
-La aplicación está desplegada en un servidor Oracle Cloud ARM (Ampere) usando Docker para el contenedor de la app y Apache2 como reverse proxy en frente. El SSL termina en Cloudflare. Adaptalo a tu VPS.
-
-```text
-Cloudflare (proxy + SSL)
-    ↓
-Apache2 (443/80) → ProxyPass → Docker container (127.0.0.1:8080) → nginx + SPA build
-```
-
-Configuración del VirtualHost de Apache para `tiempo.hugopvigo.es`:
-
-```apache
-<VirtualHost *:443>
-    ServerName tiempo.hugopvigo.es
-    SSLEngine on
-    SSLCertificateFile /etc/apache2/ssl/cloudflare.pem
-    SSLCertificateKeyFile /etc/apache2/ssl/cloudflare-key.pem
-
-    ProxyPreserveHost On
-    ProxyPass / http://127.0.0.1:8080/
-    ProxyPassReverse / http://127.0.0.1:8080/
-</VirtualHost>
-```
-
-El contenedor se construye con las API keys inyectadas en build time vía `.env`:
+El repo trae la receta de producción: el contenedor `app` publica el sitio en
+`127.0.0.1:8080` y [`info.md`](info.md) documenta el VirtualHost de Apache
+delante (proxy a ese puerto) con el SSL terminado en Cloudflare, preparado
+para el subdominio `tiempo.hugopvigo.es`.
 
 ```bash
 cd docker
 docker compose up -d app --build
+docker compose ps
+curl http://localhost:8080 | head
 ```
 
----
+## Cómo está hecho
+
+```
+tiempoweb/
+├── docs/capturas/            capturas de la web
+├── shared/                  núcleo compartido con la app móvil
+│   ├── constants/           gradientes, colores, mapeos WMO, zonas AEMET
+│   ├── services/            Open-Meteo, AEMET, RainViewer, capas de mapa
+│   ├── types/               tipos TypeScript
+│   └── utils/               fase lunar, detección de ciudad costera
+├── web/
+│   └── src/
+│       ├── components/      19 componentes: weather, tides, map, alerts…
+│       ├── hooks/           9 hooks (TanStack Query + Zustand)
+│       ├── routes/          6 rutas: Home, Search, Tides, Map, Settings…
+│       └── stores/          Zustand + localStorage
+└── docker/                  Dockerfile, Dockerfile.dev, compose y nginx
+```
+
+Stack: **Vite 8**, **React 19**, **TypeScript 6**, **Tailwind CSS 4** (plugin
+de Vite, sin fichero de configuración), **React Router 7**, **TanStack Query 5**,
+**Zustand 5**, **Leaflet** y **Lucide** para los iconos.
+
+El historial de lo que se hizo por fases está en [`CHANGELOG.md`](CHANGELOG.md)
+y el plan original en [`plan.md`](plan.md).
 
 ## Licencia
 
-**CC BY-NC-SA 4.0** — Consulta [LICENSE](LICENSE) para más detalles.
-
----
-
-<div align="center">
-
-**Desarrollado por [Hugo Perez-Vigo](https://hugopvigo.es)** · [@hugopvigo](https://x.com/hugopvigo)
-
-[![GitHub](https://img.shields.io/badge/GitHub-Hugopvigo-181717?style=for-the-badge&logo=github)](https://github.com/Hugopvigo)
-
-</div>
+Bajo **CC BY-NC-SA 4.0**: compartir con atribución, sin uso comercial y bajo
+la misma licencia. Consulta [LICENSE](LICENSE) para el texto completo.
