@@ -83,6 +83,11 @@ body {
   letter-spacing: -0.02em;
 }
 
+/* OSM no tiene teselas oscuras: se atenúa en modo noche sin pedir clave a CARTO. */
+.map-tiles-dark {
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9) saturate(0.7);
+}
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;

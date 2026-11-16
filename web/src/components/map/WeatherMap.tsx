@@ -38,9 +38,10 @@ export function WeatherMap() {
   const playIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   const { isDark } = useTheme();
 
-  const baseTiles = isDark
-    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+  // CARTO exige clave desde 2026: sus tiles sirven un marcas de agua "API KEY REQUIRED".
+  // OpenStreetMap es gratuito y sin clave; en modo oscuro se atenúa con CSS.
+  const baseTiles = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+  const baseAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
   const owmKey = settings.openWeatherMapApiKey;
 
@@ -54,8 +55,9 @@ export function WeatherMap() {
     });
 
     L.tileLayer(baseTiles, {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-      maxZoom: 18,
+      attribution: baseAttribution,
+      maxZoom: 19,
+      className: isDark ? "map-tiles-dark" : undefined,
     }).addTo(map);
 
     cityMarkersRef.current.addTo(map);
@@ -80,18 +82,20 @@ export function WeatherMap() {
     });
 
     L.tileLayer(baseTiles, {
-      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-      maxZoom: 18,
+      attribution: baseAttribution,
+      maxZoom: 19,
+      className: isDark ? "map-tiles-dark" : undefined,
     }).addTo(map);
 
     const overlayUrl = getOverlayUrl(activeLayer, rainViewerData ?? null, radarFrame, owmKey);
     if (overlayUrl) {
-      tileLayerRef.current = L.tileLayer(overlayUrl, {
-        opacity: activeLayer === "radar" || activeLayer === "satellite" ? 0.6 : 0.7,
+      L.tileLayer(overlayUrl, {
+        opacity: activeLayer === "radar" || activeLayer === "satellite" ? 0.85 : 0.7,
         maxZoom: 18,
+        attribution: activeLayer === "satellite" ? "Tiles &copy; Esri" : undefined,
       }).addTo(map);
     }
-  }, [activeLayer, radarFrame, rainViewerData, baseTiles, owmKey]);
+  }, [activeLayer, radarFrame, rainViewerData, baseTiles, baseAttribution, isDark, owmKey]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -128,8 +132,8 @@ export function WeatherMap() {
   }, [isPlaying, totalFrames]);
 
   return (
-    <div className="relative h-full min-h-[70vh] flex-1">
-      <div ref={containerRef} className="h-full w-full" />
+    <div className="relative flex min-h-[70vh] flex-1 flex-col">
+      <div ref={containerRef} className="min-h-0 w-full flex-1" />
 
       <div className="absolute left-4 top-4 z-[1000]">
         <button
@@ -208,7 +212,7 @@ function getOverlayUrl(
     case "radar":
       return data ? getRadarTileUrl(data, frame) : null;
     case "satellite":
-      return data ? getSatelliteTileUrl(data, frame) : null;
+      return getSatelliteTileUrl();
     case "temp":
       return owmKey ? getOpenWeatherMapTileUrl("temp_new", owmKey) : null;
     case "wind":
@@ -223,6 +227,6 @@ function getOverlayUrl(
 function getTotalFrames(layer: LayerType, data: RainViewerData | null): number {
   if (!data) return 0;
   if (layer === "radar") return data.radarPast.length + data.radarNowcast.length;
-  if (layer === "satellite") return data.satelliteInfrared.length;
+  if (layer === "satellite") return 0; // imagen satelital estática, sin línea de tiempo
   return 0;
 }

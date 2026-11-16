@@ -38,14 +38,9 @@ export function getRadarTileUrl(data: RainViewerData, frameIndex?: number): stri
   return `${data.host}${frame.path}/256/{z}/{x}/{y}/6/1_1.png`;
 }
 
-export function getSatelliteTileUrl(data: RainViewerData, frameIndex?: number): string | null {
-  const frames = data.satelliteInfrared;
-  if (frames.length === 0) {
-    return `${data.host}/v2/satellite/infrared/256/{z}/{x}/{y}/0/0_0.png`;
-  }
-  const idx = frameIndex ?? frames.length - 1;
-  const frame = frames[Math.min(idx, frames.length - 1)];
-  return `${data.host}${frame.path}/256/{z}/{x}/{y}/0/0_0.png`;
+/** Imagen satelital real (Esri World Imagery), sin clave y estable en navegador. */
+export function getSatelliteTileUrl(): string {
+  return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 }
 
 export function getOpenWeatherMapTileUrl(layer: string, apiKey: string): string | null {
