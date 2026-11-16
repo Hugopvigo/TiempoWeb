@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { DynamicBackground } from "@/components/theme";
+import { useOpenCitySelector } from "@/components/ui";
 import {
   CurrentWeatherSkeleton,
   HourlyForecastSkeleton,
@@ -9,7 +9,6 @@ import {
 import { CurrentWeather, HourlyForecast, PrecipitationChart, DailyForecast, WeatherDetails, AirQualityCard, LunarPhaseCard } from "@/components/weather";
 import { SeaCard } from "@/components/tides";
 import { AlertBanner } from "@/components/alerts";
-import { CitySelector } from "@/components/city";
 import { useCities } from "@/hooks/useCities";
 import { useWeather } from "@/hooks/useWeather";
 import { useTides } from "@/hooks/useTides";
@@ -32,9 +31,7 @@ export default function Home() {
   const { data: marine } = useTides(activeCity.lat, activeCity.lon, isCoastalCity(activeCity));
   const lunar = useLunarPhase(activeCity.lat, activeCity.lon, weather?.daily);
   const alerts = useMergedAlerts(weather, activeCity);
-  const [citySelectorOpen, setCitySelectorOpen] = useState(false);
-
-  const openCity = () => setCitySelectorOpen(true);
+  const openCity = useOpenCitySelector();
 
   return (
     <DynamicBackground condition={weather?.current.condition ?? "clear"} isDark={isDark}>
@@ -145,7 +142,6 @@ export default function Home() {
           </main>
         </div>
 
-        <CitySelector open={citySelectorOpen} onClose={() => setCitySelectorOpen(false)} />
       </div>
     </DynamicBackground>
   );

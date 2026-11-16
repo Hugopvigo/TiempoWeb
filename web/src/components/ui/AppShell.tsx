@@ -1,8 +1,14 @@
-import type { ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { Link, useLocation } from "react-router";
-import { Search } from "lucide-react";
+import { ChevronDown, MapPin } from "lucide-react";
+import { CitySelector } from "@/components/city";
+import { useCities } from "@/hooks/useCities";
 import { BottomNavBar } from "./BottomNavBar";
 import { LogoMark } from "./LogoMark";
+
+/** Permite que cualquier vista abra el selector de ciudades (p. ej. la cabecera móvil). */
+export const CitySelectorContext = createContext<() => void>(() => {});
+export const useOpenCitySelector = () => useContext(CitySelectorContext);
 
 const sections = [
   { to: "/", label: "Hoy" },
@@ -14,8 +20,12 @@ const sections = [
 /** Estructura común a todas las rutas: cabecera de escritorio, contenido, footer y menú móvil. */
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
+  const { activeCity } = useCities();
+  const [citySelectorOpen, setCitySelectorOpen] = useState(false);
+  const openCitySelector = () => setCitySelectorOpen(true);
 
   return (
+    <CitySelectorContext.Provider value={openCitySelector}>
     <div className="flex min-h-dvh flex-col" style={{ background: "var(--surface)", color: "var(--ink)" }}>
       <header className="hidden md:block" style={{ background: "var(--card)", borderBottom: "1px solid var(--surface-line)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center", minHeight: 64, boxSizing: "border-box" }}>
@@ -49,15 +59,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             })}
           </nav>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
-            <span className="ds-label" style={{ fontSize: 13 }}>Ciudad</span>
-            <Link
-              to="/search"
-              aria-label="Buscar ciudad"
-              style={{ width: "min(220px, 100%)", height: 44, boxSizing: "border-box", borderRadius: 22, border: "1px solid var(--surface-line)", padding: "0 16px", font: "inherit", fontSize: 15, color: "var(--ink)", background: "var(--surface)", display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}
+            <button
+              onClick={openCitySelector}
+              aria-label={`${activeCity.name}. Cambiar de ciudad o buscar`}
+              style={{ minWidth: 180, height: 44, boxSizing: "border-box", borderRadius: 22, border: "1px solid var(--surface-line)", padding: "0 16px", font: "inherit", fontSize: 15, fontWeight: 600, color: "var(--ink)", background: "var(--surface)", display: "flex", alignItems: "center", gap: 8 }}
             >
-              <Search size={16} className="ds-muted" />
-              <span>Buscar ciudad…</span>
-            </Link>
+              {activeCity.isLocation && <MapPin size={16} className="ds-accent" />}
+              <span className="line-clamp-1">{activeCity.name}</span>
+              <ChevronDown size={16} className="ds-muted" style={{ marginLeft: "auto" }} />
+            </button>
           </div>
         </div>
       </header>
@@ -69,6 +79,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       </footer>
 
       <div className="md:hidden"><BottomNavBar /></div>
+      <CitySelector open={citySelectorOpen} onClose={() => setCitySelectorOpen(false)} />
     </div>
+    </CitySelectorContext.Provider>
   );
 }
