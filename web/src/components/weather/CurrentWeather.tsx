@@ -32,7 +32,7 @@ export function CurrentWeather({ current, today, headline, temperatureUnit, icon
         >
           {formatTemperature(current.temperature, temperatureUnit)}
         </span>
-        <div className="ds-muted" style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 15 }}>
+        <div className="ds-muted" style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 15, textAlign: "right", marginLeft: "auto" }}>
           {today && (
             <span>
               Hoy: máxima {formatTemperature(today.tempMax, temperatureUnit)}, mínima{" "}
