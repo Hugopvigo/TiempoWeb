@@ -74,11 +74,14 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="flex min-h-0 flex-1 flex-col">{children}</div>
 
-      <footer style={{ textAlign: "center", fontSize: 12, lineHeight: 1.5, color: "var(--muted)", padding: "14px 16px 18px" }}>
+      <footer
+        className="px-4 pb-24 pt-3 md:pb-4"
+        style={{ textAlign: "center", fontSize: 12, lineHeight: 1.5, color: "var(--muted)" }}
+      >
         Desarrollado por Hugo Perez-Vigo · Datos de AEMET
       </footer>
 
-      <div className="md:hidden"><BottomNavBar /></div>
+      <div className="fixed inset-x-0 bottom-0 z-50 md:hidden"><BottomNavBar /></div>
       <CitySelector open={citySelectorOpen} onClose={() => setCitySelectorOpen(false)} />
     </div>
     </CitySelectorContext.Provider>
