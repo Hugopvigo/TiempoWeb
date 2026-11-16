@@ -3,14 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0F172A" />
-    <meta name="description" content="Tiempo — El clima nunca se vio tan bien. Previsión meteorológica con datos de AEMET y Open-Meteo." />
+    <meta name="theme-color" content="#E6ECF0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <meta name="description" content="Tiempo — El clima nunca se vio tan bien. Previsión meteorológica con datos de AEMET y Open-Meteo: temperatura por horas, lluvia, viento, mareas y mapa." />
+    <link rel="canonical" href="https://tiempo.hugoperezvigo.es/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Tiempo" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content="https://tiempo.hugoperezvigo.es/" />
+    <meta property="og:title" content="Tiempo — Previsión meteorológica con AEMET y Open-Meteo" />
+    <meta property="og:description" content="El clima nunca se vio tan bien: previsión por horas, lluvia, viento, mareas y mapa con datos de AEMET y Open-Meteo." />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Tiempo — Previsión meteorológica con AEMET y Open-Meteo" />
+    <meta name="twitter:description" content="Previsión por horas, lluvia, viento, mareas y mapa con datos de AEMET y Open-Meteo." />
     <link rel="preconnect" href="https://api.open-meteo.com" />
     <link rel="preconnect" href="https://geocoding-api.open-meteo.com" />
-    <title>Tiempo</title>
+    <title>Tiempo — Previsión meteorológica con AEMET y Open-Meteo</title>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Tiempo",
+      "url": "https://tiempo.hugoperezvigo.es/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "es",
+      "description": "Previsión meteorológica con datos de AEMET y Open-Meteo: temperatura por horas, lluvia, viento, mareas y mapa.",
+      "offers": { "@type": "Offer", "price": "0" }
+    }
+    </script>
   </head>
-  <body class="bg-slate-50 dark:bg-slate-950">
+  <body>
     <div id="root"></div>
+    <noscript>
+      <h1>Tiempo — Previsión meteorológica</h1>
+      <p>Tiempo muestra la previsión meteorológica con datos de AEMET y Open-Meteo: temperatura por horas, probabilidad de lluvia, viento, estado de las mareas y mapa. Activa JavaScript para ver la previsión de tu ciudad.</p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
