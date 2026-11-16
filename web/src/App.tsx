@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/theme";
 import { AppShell } from "@/components/ui";
@@ -43,6 +43,9 @@ export default function App() {
                 <Route path="/map" element={<MapRoute />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/alert/:id" element={<AlertDetail />} />
+                {/* Enlaces antiguos: los avisos se muestran en la home. */}
+                <Route path="/alert" element={<Navigate to="/" replace />} />
+                <Route path="/alerta" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
           </AppShell>

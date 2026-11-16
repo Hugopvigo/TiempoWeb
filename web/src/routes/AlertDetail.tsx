@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import { MapPin } from "lucide-react";
 import { useCities } from "@/hooks/useCities";
 import { useWeather } from "@/hooks/useWeather";
 import { useMergedAlerts } from "@/hooks/useAlerts";
@@ -43,23 +44,24 @@ export default function AlertDetail() {
     <DynamicBackground isDark={isDark}>
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto flex max-w-lg flex-col" style={{ minHeight: "100%" }}>
-            <header style={{ background: alertBackground[alert.severity], padding: "20px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
+          <header style={{ background: alertBackground[alert.severity], width: "100%", padding: "20px 16px" }}>
+            <div className="mx-auto flex max-w-lg flex-col" style={{ gap: 10 }}>
               <button onClick={() => navigate(-1)} style={{ ...backStyle, color: "#12222B" }}>
                 <ArrowLeft size={20} /> {activeCity.name}
               </button>
               <span style={{ fontSize: 14, fontWeight: 600, color: "#12222B" }}>
-                Aviso {sev.toLowerCase()} · riesgo importante
+                {levelLabel(alert.source, sev)} · riesgo importante
               </span>
               <h1 className="ds-display" style={{ margin: 0, fontSize: 36, lineHeight: 1.05, fontWeight: 700, color: "#12222B" }}>
                 {alert.title}
               </h1>
-            </header>
+            </div>
+          </header>
 
-            <main style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16, flexGrow: 1 }}>
+          <main className="mx-auto max-w-lg" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16, flexGrow: 1 }}>
               <section className="ds-card" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
-                  <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{timeRange(alert.startTime, alert.endTime)}</h2>
+                  <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{timeRange(alert.startTime, alert.endTime, alert.source)}</h2>
                   <span className="ds-label" style={{ fontSize: 13 }}>{startsIn(alert.startTime)}</span>
                 </div>
                 <div style={{ position: "relative", height: 10, borderRadius: 5, background: "var(--surface)" }}>
@@ -81,8 +83,19 @@ export default function AlertDetail() {
                   <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>Zona del aviso</h2>
                   <span className="ds-label" style={{ fontSize: 13 }}>{activeCity.name} está dentro</span>
                 </div>
-                <ZoneMap polygons={alert.polygons} point={alert.point} color={color} />
-                <span className="ds-label" style={{ fontSize: 12 }}>Contorno de la zona según AEMET.</span>
+                <ZoneMap
+                  polygons={alert.polygons}
+                  point={alert.point}
+                  color={color}
+                  cityName={activeCity.name}
+                />
+                <span className="ds-label" style={{ fontSize: 12 }}>
+                  {alert.source === "local"
+                    ? `Aviso calculado con los datos de Open-Meteo para ${activeCity.name}.`
+                    : alert.polygons && alert.polygons.length > 0
+                      ? "Contorno de la zona según AEMET."
+                      : `Zona AEMET: ${alert.zone ?? "consultar avisos"}.`}
+                </span>
               </section>
 
               <section className="ds-card" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -99,9 +112,11 @@ export default function AlertDetail() {
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginTop: "auto" }}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span className="ds-label" style={{ fontSize: 12, lineHeight: 1.35 }}>Fuente: AEMET. Emitido hoy.</span>
+                  <span className="ds-label" style={{ fontSize: 12, lineHeight: 1.35 }}>
+                    {alert.source === "local" ? "Fuente: Open-Meteo. Calculado con la previsión actual." : "Fuente: AEMET. Emitido hoy."}
+                  </span>
                   <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos" target="_blank" rel="noreferrer" className="ds-accent" style={{ minHeight: 44, display: "flex", alignItems: "center", fontSize: 13, fontWeight: 600, textDecoration: "underline" }}>
-                    Ver en AEMET
+                    {alert.source === "local" ? "Ver avisos en AEMET" : "Ver en AEMET"}
                   </a>
                 </div>
                 <button
@@ -111,8 +126,7 @@ export default function AlertDetail() {
                   {muted ? "Aviso silenciado" : "Silenciar este aviso"}
                 </button>
               </div>
-            </main>
-          </div>
+          </main>
         </div>
       </div>
     </DynamicBackground>
@@ -132,10 +146,20 @@ function Threshold({ bg, label, value }: { bg: string; label: string; value: str
   );
 }
 
-function ZoneMap({ polygons, point, color }: { polygons?: [number, number][][]; point?: { lat: number; lon: number }; color: string }) {
+function ZoneMap({ polygons, point, color, cityName }: { polygons?: [number, number][][]; point?: { lat: number; lon: number }; color: string; cityName: string }) {
   const all = polygons?.flat() ?? [];
   if (all.length < 3) {
-    return <div style={{ height: 120, borderRadius: 14, background: "var(--surface)", display: "grid", placeItems: "center", color: "var(--muted)", fontSize: 14 }}>Zona: {color ? "del aviso" : ""}</div>;
+    return (
+      <div style={{ height: 130, borderRadius: 14, background: "var(--surface)", display: "flex", alignItems: "center", justifyContent: "center", gap: 14 }}>
+        <div style={{ width: 46, height: 46, borderRadius: "50%", background: `${color}33`, display: "grid", placeItems: "center" }}>
+          <MapPin size={24} color={color} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <span style={{ fontSize: 17, fontWeight: 600 }}>{cityName}</span>
+          <span className="ds-label" style={{ fontSize: 12 }}>Aviso local para esta ciudad</span>
+        </div>
+      </div>
+    );
   }
   const lats = all.map((p) => p[0]);
   const lons = all.map((p) => p[1]);
@@ -180,11 +204,32 @@ function startsIn(iso: string): string {
   return h > 0 ? `Empieza en ${h} h ${m} min` : `Empieza en ${m} min`;
 }
 
-function timeRange(start: string, end: string): string {
-  const fmt = (iso: string) => new Date(iso).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+function timeRange(start: string, end: string, source?: string): string {
+  const fmt = (d: Date) => d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  const day = (d: Date) => {
+    const today = new Date();
+    if (d.toDateString() === today.toDateString()) return "hoy";
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    if (d.toDateString() === tomorrow.toDateString()) return "mañana";
+    return d.toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" });
+  };
   try {
-    return `Hoy, de ${fmt(start)} a ${fmt(end)}`;
+    const s = new Date(start);
+    const e = new Date(end);
+    const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+    if (s.toDateString() === e.toDateString()) return `${cap(day(s))}, de ${fmt(s)} a ${fmt(e)}`;
+    return `${cap(day(s))}, ${fmt(s)} → ${day(e)}, ${fmt(e)}`;
   } catch {
     return `${start} — ${end}`;
   }
+}
+
+/** "Previsión amarilla" para avisos propios, "Aviso naranja" para los oficiales. */
+function levelLabel(source: string | undefined, severity: string): string {
+  if (source === "local") {
+    const fem = severity === "Amarillo" ? "amarilla" : severity === "Rojo" ? "roja" : severity.toLowerCase();
+    return `Previsión ${fem}`;
+  }
+  return `Aviso ${severity.toLowerCase()}`;
 }
