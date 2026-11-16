@@ -29,7 +29,6 @@ export function WeatherMap() {
 
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const tileLayerRef = useRef<L.TileLayer | null>(null);
   const cityMarkersRef = useRef<L.LayerGroup>(L.layerGroup());
 
   const [activeLayer, setActiveLayer] = useState<LayerType>("radar");
