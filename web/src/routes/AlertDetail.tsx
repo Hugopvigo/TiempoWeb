@@ -7,7 +7,6 @@ import { DynamicBackground } from "@/components/theme";
 import { useTheme } from "@/hooks/useTheme";
 import { alertBackground, alertColors, alertSeverityLabel } from "@shared/constants/theme";
 import { ArrowLeft } from "lucide-react";
-import { BottomNavBar } from "@/components/ui";
 
 export default function AlertDetail() {
   const { id } = useParams<{ id: string }>();
@@ -23,7 +22,7 @@ export default function AlertDetail() {
   if (!alert) {
     return (
       <DynamicBackground isDark={isDark}>
-        <div className="flex h-dvh flex-col px-4 pt-4">
+        <div className="flex min-h-0 flex-1 flex-col px-4 pt-4">
           <div className="flex-1 overflow-y-auto">
             <div className="mx-auto max-w-lg">
               <button onClick={() => navigate(-1)} style={backStyle}>
@@ -32,7 +31,6 @@ export default function AlertDetail() {
               <p className="ds-muted">Alerta no encontrada.</p>
             </div>
           </div>
-          <BottomNavBar />
         </div>
       </DynamicBackground>
     );
@@ -43,7 +41,7 @@ export default function AlertDetail() {
 
   return (
     <DynamicBackground isDark={isDark}>
-      <div className="flex h-dvh flex-col">
+      <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto flex max-w-lg flex-col" style={{ minHeight: "100%" }}>
             <header style={{ background: alertBackground[alert.severity], padding: "20px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
@@ -116,7 +114,6 @@ export default function AlertDetail() {
             </main>
           </div>
         </div>
-        <BottomNavBar />
       </div>
     </DynamicBackground>
   );

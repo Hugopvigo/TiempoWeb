@@ -2,7 +2,6 @@ import { useSettingsStore } from "@/stores/cityStore";
 import { useCities } from "@/hooks/useCities";
 import type { AppSettings, City } from "@shared/types/weather";
 import { DynamicBackground } from "@/components/theme";
-import { BottomNavBar } from "@/components/ui";
 import { useTheme } from "@/hooks/useTheme";
 import {
   Sun,
@@ -21,7 +20,7 @@ export default function Settings() {
 
   return (
     <DynamicBackground condition="clear" isDark={isDark}>
-      <div className="flex h-dvh flex-col">
+      <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto px-4 pb-4 pt-4">
           <div className="mx-auto flex max-w-lg flex-col gap-4">
             <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Ajustes</h1>
@@ -37,7 +36,6 @@ export default function Settings() {
             />
           </div>
         </div>
-        <BottomNavBar />
       </div>
     </DynamicBackground>
   );

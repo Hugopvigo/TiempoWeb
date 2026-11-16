@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router";
 import { DynamicBackground } from "@/components/theme";
-import { BottomNavBar } from "@/components/ui";
 import {
   CurrentWeatherSkeleton,
   HourlyForecastSkeleton,
   DailyForecastSkeleton,
   WeatherDetailsSkeleton,
 } from "@/components/ui/Skeleton";
-import { CurrentWeather, PrecipitationChart, DailyForecast, WeatherDetails, AirQualityCard, LunarPhaseCard } from "@/components/weather";
+import { CurrentWeather, HourlyForecast, PrecipitationChart, DailyForecast, WeatherDetails, AirQualityCard, LunarPhaseCard } from "@/components/weather";
 import { SeaCard } from "@/components/tides";
 import { AlertBanner } from "@/components/alerts";
 import { CitySelector } from "@/components/city";
@@ -23,7 +21,7 @@ import { useSettingsStore } from "@/stores/cityStore";
 import { isCoastalCity } from "@shared/utils/coastal";
 import { conditionToDescription, formatTemperature } from "@shared/constants/weather";
 import type { WeatherData } from "@shared/types/weather";
-import { MapPin, ChevronDown, Search } from "lucide-react";
+import { MapPin, ChevronDown } from "lucide-react";
 
 export default function Home() {
   const { activeCity } = useCities();
@@ -40,9 +38,7 @@ export default function Home() {
 
   return (
     <DynamicBackground condition={weather?.current.condition ?? "clear"} isDark={isDark}>
-      <div className="flex h-dvh flex-col">
-        <DesktopHeader city={activeCity.name} onOpenCity={openCity} />
-
+      <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           <main className="mx-auto flex w-full max-w-[1200px] flex-col gap-4 md:grid md:grid-cols-[minmax(0,360px)_minmax(0,1fr)] md:items-start md:gap-6 md:pt-8">
             {/* Columna izquierda (en escritorio): cabecera, titular y datos */}
@@ -83,6 +79,7 @@ export default function Home() {
                     today={weather.daily[0]}
                     headline={buildHeadline(weather)}
                     temperatureUnit={settings.temperatureUnit}
+                    iconStyle={settings.iconStyle}
                   />
                 )}
               </div>
@@ -90,7 +87,7 @@ export default function Home() {
               {weather && alerts.length > 0 && <div className="order-3"><AlertBanner alerts={alerts} /></div>}
 
               {weather && (
-                <div className="order-5">
+                <div className="order-6">
                   <WeatherDetails
                     current={weather.current}
                     temperatureUnit={settings.temperatureUnit}
@@ -100,12 +97,12 @@ export default function Home() {
               )}
 
               {airQuality && (
-                <div className="order-8">
+                <div className="order-9">
                   <AirQualityCard data={airQuality} />
                 </div>
               )}
 
-              <div className="order-9">
+              <div className="order-10">
                 <LunarPhaseCard data={lunar} />
               </div>
             </div>
@@ -122,10 +119,20 @@ export default function Home() {
                 </div>
               )}
 
-              {marine && <div className="order-6"><SeaCard marine={marine} cityName={activeCity.name} /></div>}
+              {weather && (
+                <div className="order-5">
+                  <HourlyForecast
+                    hourly={weather.hourly}
+                    temperatureUnit={settings.temperatureUnit}
+                    iconStyle={settings.iconStyle}
+                  />
+                </div>
+              )}
+
+              {marine && <div className="order-7"><SeaCard marine={marine} cityName={activeCity.name} /></div>}
 
               {weather && (
-                <div className="order-7">
+                <div className="order-8">
                   <DailyForecast
                     daily={weather.daily}
                     hourly={weather.hourly}
@@ -138,41 +145,9 @@ export default function Home() {
           </main>
         </div>
 
-        <div className="md:hidden"><BottomNavBar /></div>
         <CitySelector open={citySelectorOpen} onClose={() => setCitySelectorOpen(false)} />
       </div>
     </DynamicBackground>
-  );
-}
-
-function DesktopHeader({ city, onOpenCity }: { city: string; onOpenCity: () => void }) {
-  return (
-    <header className="hidden md:block" style={{ background: "var(--card)", borderBottom: "1px solid var(--surface-line)" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center", minHeight: 64, boxSizing: "border-box" }}>
-        <Link to="/" className="ds-display" style={{ fontSize: 22, fontWeight: 700, textDecoration: "none" }}>Tiempo</Link>
-        <nav aria-label="Secciones" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          <NavItem to="/" label="Hoy" active />
-          <NavItem to="/tides" label="Mareas" />
-          <NavItem to="/map" label="Mapa" />
-          <NavItem to="/settings" label="Ajustes" />
-        </nav>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
-          <span className="ds-label" style={{ fontSize: 13 }}>Ciudad</span>
-          <button onClick={onOpenCity} aria-label="Buscar ciudad" style={{ width: "min(220px, 100%)", height: 44, boxSizing: "border-box", borderRadius: 22, border: "1px solid var(--surface-line)", padding: "0 16px", font: "inherit", fontSize: 15, color: "var(--ink)", background: "var(--surface)", display: "flex", alignItems: "center", gap: 8, textAlign: "left" }}>
-            <Search size={16} className="ds-muted" />
-            <span className="line-clamp-1">{city}</span>
-          </button>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function NavItem({ to, label, active = false }: { to: string; label: string; active?: boolean }) {
-  return (
-    <Link to={to} style={{ minHeight: 44, boxSizing: "border-box", display: "flex", alignItems: "center", padding: "0 12px", fontSize: 15, textDecoration: "none", fontWeight: active ? 600 : 400, color: active ? "var(--ink)" : "var(--muted)", borderBottom: active ? "2px solid var(--ink)" : "2px solid transparent" }}>
-      {label}
-    </Link>
   );
 }
 

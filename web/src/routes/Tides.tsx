@@ -2,7 +2,6 @@ import { useTides, useCurrentSeaCondition, useTideDirection, deriveTideForecasts
 import { useCities } from "@/hooks/useCities";
 import { isCoastalCity } from "@shared/utils/coastal";
 import { DynamicBackground } from "@/components/theme";
-import { BottomNavBar } from "@/components/ui";
 import { useTheme } from "@/hooks/useTheme";
 import { useWeather } from "@/hooks/useWeather";
 import type { MarineData } from "@shared/types/weather";
@@ -20,7 +19,7 @@ export default function Tides() {
 
   return (
     <DynamicBackground condition={condition} isDark={isDark}>
-      <div className="flex h-dvh flex-col">
+      <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto px-4 pb-4 pt-4">
           <div className="mx-auto flex max-w-lg flex-col gap-4">
         <div className="flex items-center gap-2 text-lg font-semibold text-slate-800 dark:text-white">
@@ -35,7 +34,6 @@ export default function Tides() {
             )}
           </div>
         </div>
-        <BottomNavBar />
       </div>
     </DynamicBackground>
   );

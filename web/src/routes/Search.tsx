@@ -6,7 +6,6 @@ import { useLocation } from "@/hooks/useLocation";
 import { isCoastalCity } from "@shared/utils/coastal";
 import type { City } from "@shared/types/weather";
 import { ArrowLeft, MapPin, Navigation, Search, X } from "lucide-react";
-import { BottomNavBar } from "@/components/ui";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -76,7 +75,7 @@ export default function SearchPage() {
   const existingIds = new Set(cities.map((c) => c.id));
 
   return (
-    <div className="flex h-dvh flex-col bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex-1 overflow-y-auto px-4 pt-4">
       <div className="mx-auto max-w-lg">
         <div className="mb-4 flex items-center gap-3">
@@ -156,7 +155,6 @@ export default function SearchPage() {
         )}
       </div>
       </div>
-      <BottomNavBar />
     </div>
   );
 }

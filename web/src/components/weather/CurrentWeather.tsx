@@ -1,17 +1,22 @@
-import type { CurrentWeather as CurrentWeatherType, DailyForecast } from "@shared/types/weather";
+import type { CurrentWeather as CurrentWeatherType, DailyForecast, IconStyle } from "@shared/types/weather";
 import { formatTemperature } from "@shared/constants/weather";
+import { WeatherIcon } from "./WeatherIcon";
 
 interface CurrentWeatherProps {
   current: CurrentWeatherType;
   today: DailyForecast | undefined;
   headline: string;
   temperatureUnit: "celsius" | "fahrenheit";
+  iconStyle: IconStyle;
 }
 
 /** Titular editorial + temperatura protagonista, sin iconos: el dato manda. */
-export function CurrentWeather({ current, today, headline, temperatureUnit }: CurrentWeatherProps) {
+export function CurrentWeather({ current, today, headline, temperatureUnit, iconStyle }: CurrentWeatherProps) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14, padding: "4px 0" }}>
+      <div style={{ alignSelf: "flex-start" }}>
+        <WeatherIcon condition={current.condition} colored={iconStyle === "colored"} size={72} />
+      </div>
       <h1
         className="ds-display"
         style={{ margin: 0, fontSize: 40, lineHeight: 1.05, fontWeight: 700 }}

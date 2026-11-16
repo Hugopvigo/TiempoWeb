@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/theme";
+import { AppShell } from "@/components/ui";
 import Home from "@/routes/Home";
 import Search from "@/routes/Search";
 
@@ -33,16 +34,18 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <BrowserRouter>
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/tides" element={<Tides />} />
-              <Route path="/map" element={<MapRoute />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/alert/:id" element={<AlertDetail />} />
-            </Routes>
-          </Suspense>
+          <AppShell>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/tides" element={<Tides />} />
+                <Route path="/map" element={<MapRoute />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/alert/:id" element={<AlertDetail />} />
+              </Routes>
+            </Suspense>
+          </AppShell>
         </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>
