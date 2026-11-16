@@ -1,43 +1,133 @@
 import type { City } from "../types/weather";
+import { zoneNamesForProvince, provinceKey, zoneProvinceKey } from "./meteoalertaZonas";
 
-const ADMIN1_TO_AEMET_ZONE: Record<string, string> = {
-  "Andalucía": "AND",
-  "Aragón": "ARA",
-  "Asturias": "AST",
-  "Principado de Asturias": "AST",
-  "Canarias": "CAN",
-  "Cantabria": "SAN",
-  "Castilla-La Mancha": "CLM",
-  "Castilla la Mancha": "CLM",
-  "Castilla y León": "CYL",
-  "Castilla y Leon": "CYL",
-  "Catalunya": "CAT",
-  "Cataluña": "CAT",
-  "Catalonia": "CAT",
-  "Comunitat Valenciana": "VAL",
-  "Comunidad Valenciana": "VAL",
-  "Valenciana": "VAL",
-  "Extremadura": "EXT",
-  "Galicia": "GAL",
-  "Illes Balears": "IB",
-  "Islas Baleares": "IB",
-  "Baleares": "IB",
-  "Madrid": "MAD",
-  "Comunidad de Madrid": "MAD",
-  "Murcia": "MUR",
-  "Región de Murcia": "MUR",
-  "Region de Murcia": "MUR",
-  "Navarra": "NAV",
-  "Comunidad Foral de Navarra": "NAV",
-  "País Vasco": "PVA",
-  "Euskadi": "PVA",
-  "Pais Vasco": "PVA",
-  "La Rioja": "RIO",
-  "Rioja": "RIO",
-  "Ceuta": "CEU",
-  "Melilla": "MEL",
+/**
+ * Normaliza un nombre de comunidad o provincia para compararlo sin acentos,
+ * sin mayúsculas y sin los prefijos que usa cada fuente:
+ *   "Comunidad Autónoma de Madrid" → "madrid"
+ *   "Comunidad de Madrid"         → "madrid"
+ *   "Principado de Asturias"      → "asturias"
+ *   "Provincia de Madrid"         → "madrid"
+ */
+function normText(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Prefijos que aparecen delante del nombre de la región.
+const REGION_PREFIX =
+  /^(comunidad autonoma|comunidad foral|comunitat autonoma|comunidad|ciudad autonoma|principado|region|provincia)\s+(de |del |de la |de las |de los )?/;
+
+/**
+ * Comunidad (código de zona AEMET) a partir del nombre de la comunidad. Se
+ * aceptan las dos formas que usan las fuentes: Open-Meteo ("Comunidad Autónoma
+ * de Galicia", "Comunidad Valenciana") y el geocodificador del dispositivo
+ * ("Comunidad de Madrid", "Principado de Asturias").
+ */
+const CCAA_NAMES: Record<string, string> = {
+  // Andalucía
+  "andalucia": "AND",
+  // Aragón
+  "aragon": "ARA",
+  // Asturias
+  "asturias": "AST",
+  "principado de asturias": "AST",
+  // Canarias
+  "canarias": "CAN",
+  // Cantabria
+  "cantabria": "SAN",
+  // Castilla-La Mancha
+  "castilla-la mancha": "CLM",
+  "castilla la mancha": "CLM",
+  // Castilla y León
+  "castilla y leon": "CYL",
+  // Cataluña
+  "cataluna": "CAT",
+  // Comunidad Valenciana
+  "comunidad valenciana": "VAL",
+  "comunitat valenciana": "VAL",
+  "valenciana": "VAL",
+  "valencia": "VAL",
+  // Extremadura
+  "extremadura": "EXT",
+  // Galicia
+  "galicia": "GAL",
+  // Illes Balears
+  "islas baleares": "IB",
+  "illes balears": "IB",
+  "baleares": "IB",
+  // Madrid
+  "madrid": "MAD",
+  // Murcia
+  "murcia": "MUR",
+  "region de murcia": "MUR",
+  // Navarra
+  "navarra": "NAV",
+  // País Vasco
+  "pais vasco": "PVA",
+  "euskadi": "PVA",
+  // La Rioja
+  "la rioja": "RIO",
+  "rioja": "RIO",
+  // Ceuta y Melilla
+  "ceuta": "CEU",
+  "melilla": "MEL",
 };
 
+/**
+ * Provincia → comunidad. Sirve de respaldo cuando la ciudad no trae
+ * comunidad (o viene con un nombre que no se reconoce): en España cada
+ * provincia pertenece a una sola comunidad.
+ */
+const PROVINCE_TO_CCAA: Record<string, string> = {
+  // Andalucía
+  almeria: "AND", cadiz: "AND", cordoba: "AND", granada: "AND",
+  huelva: "AND", jaen: "AND", malaga: "AND", sevilla: "AND",
+  // Aragón
+  huesca: "ARA", teruel: "ARA", zaragoza: "ARA",
+  // Asturias
+  asturias: "AST",
+  // Canarias
+  "las palmas": "CAN", "santa cruz de tenerife": "CAN",
+  // Cantabria
+  cantabria: "SAN",
+  // Castilla-La Mancha
+  albacete: "CLM", "ciudad real": "CLM", cuenca: "CLM",
+  guadalajara: "CLM", toledo: "CLM",
+  // Castilla y León
+  avila: "CYL", burgos: "CYL", leon: "CYL", palencia: "CYL",
+  salamanca: "CYL", segovia: "CYL", soria: "CYL",
+  valladolid: "CYL", zamora: "CYL",
+  // Cataluña
+  barcelona: "CAT", girona: "CAT", lleida: "CAT", tarragona: "CAT",
+  // Comunidad Valenciana
+  alicante: "VAL", castellon: "VAL", valencia: "VAL",
+  // Extremadura
+  badajoz: "EXT", caceres: "EXT",
+  // Galicia
+  "a coruna": "GAL", lugo: "GAL", ourense: "GAL", pontevedra: "GAL",
+  // Illes Balears
+  "illes balears": "IB",
+  // Madrid
+  madrid: "MAD",
+  // Murcia
+  murcia: "MUR",
+  // Navarra
+  navarra: "NAV",
+  // País Vasco
+  alava: "PVA", bizkaia: "PVA", gipuzkoa: "PVA",
+  // La Rioja
+  "la rioja": "RIO",
+  // Ceuta y Melilla
+  ceuta: "CEU", melilla: "MEL",
+};
+
+// Códigos oficiales del parámetro `area` de /api/avisos_cap/ultimoelaborado/area/{area}
+// según la especificación de AEMET OpenData (AEMET_OpenData_specification.json).
 const ZONE_TO_CCAA: Record<string, string> = {
   AND: "61",
   ARA: "62",
@@ -45,186 +135,110 @@ const ZONE_TO_CCAA: Record<string, string> = {
   IB: "64",
   CAN: "65",
   SAN: "66",
-  CLM: "67",
-  CYL: "68",
+  CYL: "67",
+  CLM: "68",
   CAT: "69",
-  VAL: "70",
-  EXT: "71",
-  GAL: "72",
-  MAD: "73",
-  MUR: "74",
-  NAV: "75",
-  PVA: "76",
-  RIO: "77",
+  EXT: "70",
+  GAL: "71",
+  MAD: "72",
+  MUR: "73",
+  NAV: "74",
+  PVA: "75",
+  RIO: "76",
+  VAL: "77",
   CEU: "78",
   MEL: "79",
 };
 
+/** Código de zona AEMET de una comunidad, a partir de su nombre. */
+export function resolveCCAA(admin1: string | undefined): string | undefined {
+  if (!admin1) return undefined;
+  const norm = normText(admin1);
+  const direct = CCAA_NAMES[norm];
+  if (direct) return direct;
+  return CCAA_NAMES[norm.replace(REGION_PREFIX, "").trim()];
+}
+
+/**
+ * Zona AEMET de una ciudad: por su comunidad y, si no se reconoce, por su
+ * provincia (el geocodificador del dispositivo a veces devuelve la provincia
+ * en el campo de comunidad).
+ */
 export function getAEMETZone(city: City): string | undefined {
-  if (!city.admin1) return undefined;
-  const normalized = city.admin1.trim();
-  return ADMIN1_TO_AEMET_ZONE[normalized];
+  return (
+    resolveCCAA(city.admin1) ??
+    PROVINCE_TO_CCAA[provinceKey(city.admin1)] ??
+    PROVINCE_TO_CCAA[provinceKey(city.admin2)]
+  );
 }
 
 export function getCCAACode(zonaCode: string): string | undefined {
   return ZONE_TO_CCAA[zonaCode];
 }
 
-// ─── Subzone mappings ───────────────────────
-// Names used by AEMET CAP areaDesc for each CCAA.
-// Keys are the AEMET zone codes; values are arrays of subzone name patterns
-// that appear in CAP <areaDesc> fields.
-
-export const CCAA_SUBZONES: Record<string, string[]> = {
-  GAL: [
-    "A Coruña", "Coruña", "A Coruna", "Coruna",
-    "Lugo",
-    "Ourense",
-    "Pontevedra",
-    "Rías Baixas", "Rias Baixas",
-    "Miño", "Minho",
-  ],
-  MAD: [
-    "Sierra",
-    "Metropolitana", "Henares",
-    "Sur", "Vegas",
-    "Oeste",
-  ],
-  AND: [
-    "Almería", "Almeria",
-    "Cádiz", "Cadiz", "Estrecho",
-    "Córdoba", "Cordoba",
-    "Granada",
-    "Huelva", "Aracena", "Andévalo", "Andevalo", "Condado",
-    "Jaén", "Jaen", "Cazorla", "Morena",
-    "Málaga", "Malaga", "Sol", "Guadalhorce",
-    "Sevilla", "Seville",
-  ],
-  ARA: [
-    "Huesca", "Pirineo",
-    "Teruel",
-    "Zaragoza", "Ibérica", "Iberica",
-  ],
-  AST: [
-    "Asturias", "Cordillera", "Picos de Europa",
-    "Costa", "Litoral", "Occidental", "Oriental",
-  ],
-  CAN: [
-    "Tenerife", "Gran Canaria", "Lanzarote", "Fuerteventura",
-    "La Palma", "La Gomera", "El Hierro",
-    "Cumbres", "Medianías", "Medianias", "Costas",
-  ],
-  SAN: [
-    "Cantabria", "Cantábrico", "Cantabrico",
-    "Liébana", "Liebana", "Costa", "Central",
-  ],
-  CLM: [
-    "Albacete", "Hellín", "Hellin",
-    "Ciudad Real",
-    "Cuenca",
-    "Guadalajara", "Parameras",
-    "Toledo", "Tajo", "Montes",
-    "Mancha", "Alcarria",
-  ],
-  CYL: [
-    "Ávila", "Avila",
-    "Burgos",
-    "León", "Leon",
-    "Palencia",
-    "Salamanca",
-    "Segovia",
-    "Soria",
-    "Valladolid",
-    "Zamora", "Sanabria",
-    "Meseta", "Ibérica", "Iberica",
-  ],
-  CAT: [
-    "Barcelona",
-    "Girona", "Gerona",
-    "Lleida", "Lérida", "Lerida",
-    "Tarragona",
-    "Pirineo", "Aran",
-    "Costa", "Litoral",
-    "Central", "Interior", "Prepirineo",
-  ],
-  VAL: [
-    "Alicante", "Alacant",
-    "Castellón", "Castellon",
-    "Valencia",
-    "Costa", "Litoral", "Interior",
-  ],
-  EXT: [
-    "Badajoz",
-    "Cáceres", "Caceres",
-    "Tajo", "Guadiana", "Meseta",
-  ],
-  IB: [
-    "Mallorca", "Menorca", "Ibiza", "Eivissa", "Formentera",
-    "Baleares", "Balears", "Pitiusas",
-  ],
-  MUR: [
-    "Murcia", "Altiplano", "Vega", "Segura", "Campo de Cartagena",
-    "Litoral", "Cartagena",
-  ],
-  NAV: [
-    "Navarra", "Navarre", "Pirineo", "Cantábrica",
-    "Centro", "Ribera",
-  ],
-  PVA: [
-    "Bizkaia", "Vizcaya",
-    "Gipuzkoa", "Guipúzcoa", "Guipuzcoa",
-    "Álava", "Alava",
-    "Costa", "Litoral", "Interior",
-    "Euskadi", "País Vasco", "Pais Vasco",
-  ],
-  RIO: [
-    "Rioja", "Ribera", "Ibérica", "Iberica",
-  ],
-  CEU: ["Ceuta"],
-  MEL: ["Melilla"],
-};
-
-// Subzone override by city name: city name → subzone patterns to match
-const CITY_SUBZONE_OVERRIDE: Record<string, string[]> = {};
-
 /**
- * Returns the best-guess AEMET subzone names for a city
- * based on its name and admin1. Used to match against CAP areaDesc.
+ * Patrones de nombre de zona Meteoalerta (CAP <areaDesc>) para una ciudad.
+ * Lista vacía = sin filtro: se muestran todos los avisos de la comunidad.
+ *
+ * Orden: zona concreta si conocemos el municipio (Madrid capital está en
+ * "Metropolitana y Henares", Vigo en "Rias Baixas"); si no, todas las zonas de
+ * su provincia (admin2 de la geocodificación); si tampoco, toda la comunidad.
+ * El admin1 no se usa como patrón: "Galicia" no aparece en ningún nombre de
+ * zona y "Madrid" casaba con "Sierra de Madrid" (avisos de nieve de la Sierra
+ * para la capital y para Getafe).
  */
 export function getAEMETSubzonePatterns(city: City): string[] {
-  const nameLower = city.name.toLowerCase();
-  const admin1 = city.admin1 || "";
-
-  // Check explicit override first
-  if (CITY_SUBZONE_OVERRIDE[city.name]) {
-    return CITY_SUBZONE_OVERRIDE[city.name];
+  const exact = CITY_KEYWORD_ZONES[city.name.trim().toLowerCase()];
+  if (exact) {
+    // La zona concreta solo vale si es de la provincia de la ciudad: hay dos
+    // Vigo (Pontevedra y Asturias) y "Madrid" en medio mundo.
+    const cityProvince = provinceKey(city.admin2);
+    const zones = cityProvince
+      ? exact.filter((z) => zoneProvinceKey(z) === cityProvince)
+      : exact;
+    if (zones.length > 0) return zones;
   }
 
-  const patterns: string[] = [admin1];
-
-  // Try to extract province/county from city name or admin1 context
-  const provinceKeywords: Record<string, string[]> = {
-    "coruña": ["A Coruña", "Coruña", "Coruna"],
-    "coruna": ["A Coruña", "Coruña", "Coruna"],
-    "lugo": ["Lugo"],
-    "ourense": ["Ourense"],
-    "orense": ["Ourense"],
-    "pontevedra": ["Pontevedra"],
-    "santiago": ["A Coruña", "Coruña", "Coruna"],
-    "ferrol": ["A Coruña", "Coruña", "Coruna"],
-    "vigo": ["Pontevedra"],
-    "rias": ["Rías Baixas", "Rias Baixas"],
-    "madrid": ["Metropolitana", "Henares", "Sur", "Vegas", "Sierra", "Oeste"],
-    "alcalá": ["Henares"],
-    "alcala": ["Henares"],
-  };
-
-  for (const [key, zonePatterns] of Object.entries(provinceKeywords)) {
-    if (nameLower.includes(key)) {
-      patterns.push(...zonePatterns);
-    }
-  }
-
-  // Deduplicate
-  return [...new Set(patterns)];
+  return zoneNamesForProvince(city.admin2);
 }
+
+// Municipio (nombre exacto, en minúsculas) → zona Meteoalerta en la que está.
+// Solo los que se saben seguros; el resto cae en las zonas de su provincia.
+const CITY_KEYWORD_ZONES: Record<string, string[]> = {
+  // Madrid: área metropolitana
+  "madrid": ["Metropolitana y Henares"],
+  "alcalá de henares": ["Metropolitana y Henares"],
+  "alcala de henares": ["Metropolitana y Henares"],
+  "alcorcón": ["Metropolitana y Henares"],
+  "getafe": ["Metropolitana y Henares"],
+  "leganés": ["Metropolitana y Henares"],
+  "leganes": ["Metropolitana y Henares"],
+  "fuenlabrada": ["Metropolitana y Henares"],
+  "móstoles": ["Metropolitana y Henares"],
+  "mostoles": ["Metropolitana y Henares"],
+  "parla": ["Metropolitana y Henares"],
+  "torrejón de ardoz": ["Metropolitana y Henares"],
+  "torrejon de ardoz": ["Metropolitana y Henares"],
+  "coslada": ["Metropolitana y Henares"],
+  "san fernando de henares": ["Metropolitana y Henares"],
+  // Madrid: sur y oeste
+  "aranjuez": ["Sur, Vegas y Oeste"],
+  // Galicia
+  "vigo": ["Rias Baixas"],
+  "pontevedra": ["Rias Baixas"],
+  // Baleares: la provincia es la comunidad entera, así que se acota por isla
+  "palma": ["Norte y nordeste de Mallorca", "Interior de Mallorca", "Sur de Mallorca", "Levante mallorquín"],
+  "palma de mallorca": ["Norte y nordeste de Mallorca", "Interior de Mallorca", "Sur de Mallorca", "Levante mallorquín"],
+  "ibiza": ["Ibiza y Formentera"],
+  "eivissa": ["Ibiza y Formentera"],
+  "formentera": ["Ibiza y Formentera"],
+  "mahón": ["Menorca"],
+  "maó": ["Menorca"],
+  "ciutadella": ["Menorca"],
+  "inca": ["Menorca"],
+  // Canarias: la provincia es la comunidad entera, así que se acota por isla
+  "las palmas de gran canaria": ["Norte de Gran Canaria", "Cumbres de Gran Canaria", "Este, sur y oeste de Gran Canaria"],
+  "arrecife": ["Lanzarote"],
+  "puerto del rosario": ["Fuerteventura"],
+  "santa cruz de tenerife": ["Norte de Tenerife", "Área Metropolitana de Tenerife", "Este, sur y oeste de Tenerife"],
+};

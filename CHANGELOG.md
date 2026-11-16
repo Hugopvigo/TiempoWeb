@@ -1,5 +1,16 @@
 # Changelog
 
+## Sin versión — Avisos AEMET por zona y avisos propios por cantidades
+
+Portado de la app móvil (v4.6.2 a v4.8.0).
+
+- El código de comunidad que se pedía a AEMET estaba desplazado respecto a la especificación de OpenData (Madrid pedía los avisos de Murcia, Galicia los de Madrid). Tabla corregida
+- La comunidad se resuelve normalizando el nombre ("Comunidad Autónoma de Galicia" → Galicia) y, si no se reconoce, por la provincia. Antes las ciudades añadidas desde el buscador no tenían zona y no recibían avisos oficiales
+- Los avisos se filtran por el polígono CAP de la zona (~2 km de margen); sin polígono, por las zonas Meteoalerta de la provincia (`meteoalertaZonas.ts`). La comunidad ya no se usa como patrón: "Madrid" casaba con "Sierra de Madrid" y la capital recibía sus avisos de nieve
+- Se descartan avisos caducados, cancelados y de prueba; un aviso y su actualización no se duplican; si AEMET falla se conservan los últimos avisos buenos
+- Avisos propios con umbrales del Plan Meteoalerta sobre cantidades de Open-Meteo (mm por hora y en 12 h, cm de nieve en 24 h, rachas, máxima y mínima) en vez de probabilidad de lluvia, icono de nieve y UV
+- El buscador guarda la provincia (`admin2`) de la ciudad
+
 ## v1.0.0-alpha.1 — Fase 0: Scaffolding
 
 ### Monorepo + Proyecto Web

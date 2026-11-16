@@ -29,6 +29,12 @@ export interface HourlyForecast {
   condition: WeatherCondition;
   icon: string;
   precipitationChance: number;
+  /** mm acumulados en la hora */
+  precipitation: number;
+  /** cm de nieve acumulados en la hora */
+  snowfall: number;
+  /** racha máxima de viento, km/h */
+  windGusts: number;
 }
 
 export interface DailyForecast {
@@ -118,6 +124,8 @@ export interface City {
   name: string;
   country: string;
   admin1?: string;
+  /** Provincia (admin2); acota los avisos AEMET a las zonas de la provincia */
+  admin2?: string;
   lat: number;
   lon: number;
   isLocation?: boolean;
@@ -130,6 +138,18 @@ export interface WeatherAlert {
   description: string;
   severity: "yellow" | "orange" | "red";
   type: "rain" | "storm" | "snow" | "wind" | "heat" | "cold" | "coastal" | "fog";
+  /** Aviso oficial de AEMET o previsión propia a partir de Open-Meteo */
+  source?: "aemet" | "local";
+  /** Identidad del aviso sin el nivel */
+  key?: string;
+  /** Zona Meteoalerta (AEMET) o ciudad (local) */
+  zone?: string;
+  /** Lo que se espera, en una frase */
+  detail?: string;
+  /** Polígonos de la zona que contiene la ciudad, como pares [lat, lon] */
+  polygons?: [number, number][][];
+  /** Coordenadas de la ciudad para la que se filtró el aviso */
+  point?: { lat: number; lon: number };
   startTime: string;
   endTime: string;
 }

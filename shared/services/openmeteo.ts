@@ -25,6 +25,9 @@ interface OpenMeteoResponse {
     temperature_2m: number[];
     weather_code: number[];
     precipitation_probability: number[];
+    precipitation: number[];
+    snowfall: number[];
+    wind_gusts_10m: number[];
     is_day: number[];
   };
   daily: {
@@ -58,6 +61,9 @@ export async function getWeather(lat: number, lon: number, cityName: string): Pr
       "temperature_2m",
       "weather_code",
       "precipitation_probability",
+      "precipitation",
+      "snowfall",
+      "wind_gusts_10m",
       "is_day",
     ].join(","),
     daily: [
@@ -112,6 +118,9 @@ export async function getWeather(lat: number, lon: number, cityName: string): Pr
         condition: cond,
         icon: conditionToIcon[cond],
         precipitationChance: data.hourly.precipitation_probability[idx],
+        precipitation: data.hourly.precipitation[idx] ?? 0,
+        snowfall: data.hourly.snowfall[idx] ?? 0,
+        windGusts: data.hourly.wind_gusts_10m[idx] ?? 0,
       };
     }),
     daily: data.daily.time.map((date, i) => {
@@ -153,6 +162,7 @@ export async function searchCities(query: string, signal?: AbortSignal) {
     name: r.name,
     country: r.country ?? "",
     admin1: r.admin1 ?? "",
+    admin2: r.admin2 ?? "",
     lat: Math.round(r.latitude * 10000) / 10000,
     lon: Math.round(r.longitude * 10000) / 10000,
   }));
