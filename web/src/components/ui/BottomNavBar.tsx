@@ -1,34 +1,52 @@
-import { Home, Waves, Map, Settings } from "lucide-react";
+import { CloudSun, Waves, Map, SlidersHorizontal } from "lucide-react";
 import { NavLink } from "react-router";
 
 const navItems = [
-  { to: "/", icon: Home, label: "Inicio" },
+  { to: "/", icon: CloudSun, label: "Hoy" },
   { to: "/tides", icon: Waves, label: "Mareas" },
   { to: "/map", icon: Map, label: "Mapa" },
-  { to: "/settings", icon: Settings, label: "Ajustes" },
+  { to: "/settings", icon: SlidersHorizontal, label: "Ajustes" },
 ];
 
 export function BottomNavBar() {
   return (
-    <nav className="shrink-0 border-t border-slate-200/80 bg-white/95 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900">
-      <div className="mx-auto flex max-w-lg items-center justify-around py-2">
-        {navItems.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              `flex flex-col items-center gap-0.5 px-3 py-1.5 text-xs transition-colors ${
-                isActive
-                  ? "text-blue-500 dark:text-blue-400"
-                  : "text-slate-500 dark:text-slate-400"
-              }`
-            }
-          >
-            <Icon size={20} />
-            <span>{label}</span>
-          </NavLink>
-        ))}
-      </div>
+    <nav
+      aria-label="Secciones"
+      className="shrink-0"
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+        background: "var(--card)",
+        borderTop: "1px solid var(--surface-line)",
+        padding: "8px 8px 16px",
+      }}
+    >
+      {navItems.map(({ to, icon: Icon, label }) => (
+        <NavLink
+          key={to}
+          to={to}
+          end={to === "/"}
+          style={({ isActive }) => ({
+            minHeight: 48,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 2,
+            fontSize: 12,
+            fontWeight: isActive ? 600 : 400,
+            color: isActive ? "var(--ink)" : "var(--muted)",
+            textDecoration: "none",
+          })}
+        >
+          {({ isActive }) => (
+            <>
+              <Icon size={22} fill={isActive ? "currentColor" : "none"} strokeWidth={2} />
+              <span>{label}</span>
+            </>
+          )}
+        </NavLink>
+      ))}
     </nav>
   );
 }

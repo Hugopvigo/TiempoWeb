@@ -1,16 +1,16 @@
 import { useState } from "react";
-import type { DailyForecast as DailyForecastType } from "@shared/types/weather";
+import type { DailyForecast as DailyForecastType, HourlyForecast, IconStyle } from "@shared/types/weather";
 import { formatTemperature } from "@shared/constants/weather";
 import { WeatherIcon } from "./WeatherIcon";
-import type { IconStyle } from "@shared/types/weather";
 
 interface DailyForecastProps {
   daily: DailyForecastType[];
+  hourly: HourlyForecast[];
   temperatureUnit: "celsius" | "fahrenheit";
   iconStyle: IconStyle;
 }
 
-export function DailyForecast({ daily, temperatureUnit, iconStyle }: DailyForecastProps) {
+export function DailyForecast({ daily, hourly, temperatureUnit, iconStyle }: DailyForecastProps) {
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? daily : daily.slice(0, 4);
   const canExpand = daily.length > 4;
@@ -19,36 +19,50 @@ export function DailyForecast({ daily, temperatureUnit, iconStyle }: DailyForeca
   const allMin = Math.min(...daily.map((d) => d.tempMin));
   const range = allMax - allMin || 1;
 
+  const rainByDate: Record<string, number> = {};
+  hourly.forEach((h) => {
+    const day = h.time.slice(0, 10);
+    rainByDate[day] = (rainByDate[day] ?? 0) + h.precipitation;
+  });
+
   return (
-    <div className="rounded-2xl border border-transparent bg-white/80 p-4 backdrop-blur-md dark:border-white/10 dark:bg-slate-800">
-      <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-300">
-        Próximos 7 días
-      </p>
-      <div className="flex flex-col divide-y divide-slate-200/50 dark:divide-slate-700">
-        {visible.map((day) => {
+    <div className="ds-card" style={{ padding: "16px 16px 6px", display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", paddingBottom: 6 }}>
+        <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>Próximos días</h2>
+        <span className="ds-label" style={{ fontSize: 12 }}>Lluvia, mínima y máxima</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {visible.map((day, i) => {
           const barLeft = ((day.tempMin - allMin) / range) * 100;
           const barWidth = ((day.tempMax - day.tempMin) / range) * 100;
+          const mm = rainByDate[day.date] ?? 0;
           return (
-            <div key={day.date} className="flex items-center gap-3 py-2.5">
-              <span className="w-16 shrink-0 text-base font-medium text-slate-700 dark:text-slate-200">
-                {formatDayName(day.date)}
-              </span>
+            <div
+              key={day.date}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "52px 22px 52px 30px minmax(0, 1fr) 30px",
+                alignItems: "center",
+                columnGap: 8,
+                minHeight: 44,
+                fontSize: 15,
+                borderTop: i > 0 ? "1px solid var(--surface-line)" : undefined,
+              }}
+            >
+              <span style={{ fontWeight: 600 }}>{formatDayName(day.date)}</span>
               <WeatherIcon condition={day.condition} colored={iconStyle === "colored"} size={20} />
-              <span className="w-8 shrink-0 text-right text-sm text-blue-500 dark:text-blue-300">
-                {day.precipitationChance > 0 ? `${day.precipitationChance}%` : ""}
+              <span
+                className="ds-accent"
+                style={{ fontSize: 13, fontWeight: 600, textAlign: "right" }}
+                title={mm >= 0.5 ? `${Math.round(mm)} mm previstos` : undefined}
+              >
+                {day.precipitationChance > 0 ? `${day.precipitationChance}%` : mm >= 0.5 ? `${Math.round(mm)} mm` : "Seco"}
               </span>
-              <span className="w-8 shrink-0 text-right text-sm text-slate-400 dark:text-slate-300">
-                {formatTemperature(day.tempMin, temperatureUnit)}
-              </span>
-                <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-slate-200/60 dark:bg-slate-700">
-                <div
-                  className="absolute inset-y-0 rounded-full bg-gradient-to-r from-blue-400 to-orange-400"
-                  style={{ left: `${barLeft}%`, width: `${Math.max(barWidth, 4)}%` }}
-                />
+              <span className="ds-muted" style={{ textAlign: "right" }}>{formatTemperature(day.tempMin, temperatureUnit)}</span>
+              <div style={{ height: 6, borderRadius: 3, background: "var(--surface)", position: "relative" }}>
+                <div style={{ position: "absolute", left: `${barLeft}%`, width: `${Math.max(barWidth, 4)}%`, top: 0, bottom: 0, borderRadius: 3, background: "linear-gradient(90deg, #60A5FA, #FB923C)" }} />
               </div>
-              <span className="w-8 shrink-0 text-base font-medium text-slate-700 dark:text-slate-200">
-                {formatTemperature(day.tempMax, temperatureUnit)}
-              </span>
+              <span style={{ fontWeight: 600, textAlign: "right" }}>{formatTemperature(day.tempMax, temperatureUnit)}</span>
             </div>
           );
         })}
@@ -56,9 +70,10 @@ export function DailyForecast({ daily, temperatureUnit, iconStyle }: DailyForeca
       {canExpand && (
         <button
           onClick={() => setShowAll(!showAll)}
-          className="mt-2 w-full rounded-xl py-2 text-sm font-medium text-blue-500 transition-colors hover:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/20"
+          className="ds-accent"
+          style={{ minHeight: 44, width: "100%", fontSize: 14, fontWeight: 600 }}
         >
-          {showAll ? "Menos" : "Más"}
+          {showAll ? "Ver menos" : "Ver toda la semana"}
         </button>
       )}
     </div>
@@ -70,10 +85,7 @@ function formatDayName(dateStr: string): string {
     const d = new Date(dateStr + "T12:00:00");
     const today = new Date();
     if (d.toDateString() === today.toDateString()) return "Hoy";
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    if (d.toDateString() === tomorrow.toDateString()) return "Mañana";
-    return d.toLocaleDateString("es-ES", { weekday: "short" });
+    return d.toLocaleDateString("es-ES", { weekday: "short" }).replace(".", "");
   } catch {
     return dateStr;
   }

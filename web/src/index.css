@@ -3,7 +3,37 @@
 @custom-variant dark (&:is(.dark, .dark *));
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", "Hanken Grotesk", sans-serif;
+}
+
+/* Rediseño editorial: una superficie plana, tinta oscura y tarjetas sólidas. */
+:root {
+  --surface: #e6ecf0;
+  --surface-line: #d5dce0;
+  --card: #ffffff;
+  --ink: #12222b;
+  --muted: #44565f;
+  --accent: #1f5fbf;
+  --warm: #b36a00;
+  --sea: #12222b;
+  --sea-ink: #f1f5f7;
+  --sea-muted: #b9c7ce;
+  --rain: #1f5fbf;
+}
+
+.dark {
+  --surface: #0c1920;
+  --surface-line: #2c404a;
+  --card: #16272f;
+  --ink: #eef3f5;
+  --muted: #a9bac2;
+  --accent: #7fb2f0;
+  --warm: #e0a54b;
+  --sea: #22343d;
+  --sea-ink: #f1f5f7;
+  --sea-muted: #a9bac2;
+  --rain: #7fb2f0;
 }
 
 html,
@@ -17,7 +47,40 @@ body,
 }
 
 body {
+  background: var(--surface);
+  color: var(--ink);
   font-family: var(--font-sans);
+}
+
+/* Superficies y tipografía compartidas por todo el rediseño. */
+.ds-card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.ds-tile {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.ds-label {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ds-muted {
+  color: var(--muted);
+}
+
+.ds-accent {
+  color: var(--accent);
+}
+
+.ds-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 @keyframes shimmer {
