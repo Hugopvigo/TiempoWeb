@@ -6,7 +6,7 @@ import { useMergedAlerts } from "@/hooks/useAlerts";
 import { DynamicBackground } from "@/components/theme";
 import { useTheme } from "@/hooks/useTheme";
 import { alertBackground, alertColors, alertSeverityLabel } from "@shared/constants/theme";
-import { AlertTriangle, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { BottomNavBar } from "@/components/ui";
 
 export default function AlertDetail() {
