@@ -61,7 +61,7 @@ export default function AlertDetail() {
           <main className="mx-auto max-w-lg" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16, flexGrow: 1 }}>
               <section className="ds-card" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
-                  <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{timeRange(alert.startTime, alert.endTime, alert.source)}</h2>
+                  <h2 style={{ margin: 0, fontSize: 15, fontWeight: 600 }}>{timeRange(alert.startTime, alert.endTime)}</h2>
                   <span className="ds-label" style={{ fontSize: 13 }}>{startsIn(alert.startTime)}</span>
                 </div>
                 <div style={{ position: "relative", height: 10, borderRadius: 5, background: "var(--surface)" }}>
@@ -204,7 +204,7 @@ function startsIn(iso: string): string {
   return h > 0 ? `Empieza en ${h} h ${m} min` : `Empieza en ${m} min`;
 }
 
-function timeRange(start: string, end: string, source?: string): string {
+function timeRange(start: string, end: string): string {
   const fmt = (d: Date) => d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
   const day = (d: Date) => {
     const today = new Date();
